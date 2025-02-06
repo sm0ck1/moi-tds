@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Domain;
 
+use App\Http\Controllers\Controller;
 use App\Models\Domain;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class DomainController extends Controller
 {
@@ -12,7 +14,16 @@ class DomainController extends Controller
      */
     public function index()
     {
-        //
+        if (request()->has('trashed')) {
+            $domains = Domain::onlyTrashed();
+        } else {
+            $domains = Domain::query();
+        }
+
+
+        return Inertia::render('Domain/DomainIndex', [
+            'domains' => $domains->get(),
+        ]);
     }
 
     /**
@@ -20,7 +31,7 @@ class DomainController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Domain/DomainCreate');
     }
 
     /**
@@ -44,7 +55,9 @@ class DomainController extends Controller
      */
     public function edit(Domain $domain)
     {
-        //
+        return Inertia::render('Domain/DomainEdit', [
+            'domain' => $domain,
+        ]);
     }
 
     /**

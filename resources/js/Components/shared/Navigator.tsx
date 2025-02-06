@@ -45,17 +45,16 @@ export default function Navigator(props: DrawerProps) {
                     active: route().current('portal.*'),
                     link: route('portal.index'),
                 },
-                { id: 'Topics', icon: <DnsRoundedIcon />, link: route('topic.index'), active: route().current('topic.*'),},
+
             ],
         },
-        // {
-        //     id: 'Quality',
-        //     children: [
-        //         { id: 'Analytics', icon: <SettingsIcon /> },
-        //         { id: 'Performance', icon: <TimerIcon /> },
-        //         { id: 'Test Lab', icon: <PhonelinkSetupIcon /> },
-        //     ],
-        // },
+        {
+            id: 'Setting',
+            children: [
+                { id: 'Topics', icon: <DnsRoundedIcon />, link: route('topic.index'), active: route().current('topic.*'),},
+                { id: 'Domains', icon: <DnsRoundedIcon />, link: route('domain.index'), active: route().current('domain.*'),},
+            ],
+        },
     ];
 
     const { ...other } = props;

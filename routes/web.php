@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Domain\DomainController;
 use App\Http\Controllers\Partner\PartnerController;
 use App\Http\Controllers\Partner\PartnerLinksController;
 use App\Http\Controllers\Portal\PortalController;
@@ -17,6 +18,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::resource('partners', PartnerController::class);
     Route::resource('topic', TopicController::class);
     Route::resource('portal', PortalController::class);
+    Route::resource('domain', DomainController::class);
     Route::resource('partner-links', PartnerLinksController::class);
     Route::post('portal-partner-links', [PortalPartnerLinksController::class, 'storePortalPartnerLinks'])->name('portal-partner-links.store');
 

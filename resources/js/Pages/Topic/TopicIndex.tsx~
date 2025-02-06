@@ -1,0 +1,87 @@
+import {PageProps} from "@/types";
+import {Topic} from "@/types/topic";
+import DashboardLayout from "@/Components/shared/DashboardLayout";
+import TableContainer from "@mui/material/TableContainer";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import TableBody from "@mui/material/TableBody";
+import Button from "@mui/material/Button";
+import {ButtonGroup} from "@mui/material";
+import {Link, useForm} from "@inertiajs/react";
+import EditIcon from "@mui/icons-material/Edit";
+import Delete from "@mui/icons-material/Delete";
+
+export default function TopicIndex({topics} : PageProps<{topics: Topic[]}>) {
+
+    const {delete: destroy, processing} = useForm();
+
+    return (
+        <DashboardLayout header={{
+            title: 'Topic',
+            buttons: [{
+                type: 'link',
+                href: route('topic.create'),
+                label: 'Add Topic',
+            }],
+            filters: [{
+                type: 'link',
+                href: route('topic.index'),
+                label: 'All',
+            },{
+                type: 'link',
+                href: route('topic.index', {'trashed': 'only'}),
+                label: 'Deleted',
+            }],
+        }}>
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+                    <TableHead>
+                        <TableRow>
+
+                            <TableCell>Name</TableCell>
+                            <TableCell>Slug</TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {topics.map((row) => (
+                            <TableRow
+                                key={row.name}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+
+                                <TableCell component="th" scope="row">
+                                    {row.name}
+                                </TableCell>
+                                <TableCell>{row.slug}</TableCell>
+                                <TableCell>{row.description}</TableCell>
+                                <TableCell align={"right"}>
+                                    <ButtonGroup>
+                                        {!row.deleted_at && (
+                                            <>
+                                        <Button component={Link} variant='text' href={route('topic.edit', row.id)}>
+                                            <EditIcon fontSize="small"/>
+                                        </Button>
+                                        <Button variant='text' loading={processing} onClick={() => {
+                                            if(confirm('Are you sure?')) {
+                                                destroy(route('topic.destroy', row.id));
+                                            }
+                                        }}>
+                                            <Delete fontSize="small"/>
+                                        </Button>
+                                            </>
+                                        )}
+                                    </ButtonGroup>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </DashboardLayout>
+    );
+}

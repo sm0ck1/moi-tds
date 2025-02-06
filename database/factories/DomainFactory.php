@@ -1,0 +1,28 @@
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Domain>
+ */
+class DomainFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'name' => $this->faker->unique()->domainName,
+            'date_registration' => $this->faker->date(),
+            'date_end' => $this->faker->date(),
+            'note' => $this->faker->text(),
+            'dns_provider' => $this->faker->company,
+            'dns_provider_login' => $this->faker->email,
+        ];
+    }
+}

@@ -1,0 +1,125 @@
+import * as React from 'react';
+import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid2';
+import IconButton from '@mui/material/IconButton';
+import {Head, Link} from '@inertiajs/react';
+import MenuIcon from '@mui/icons-material/Menu';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import {ButtonGroup} from "@mui/material";
+
+interface HeaderProps {
+    onDrawerToggle: () => void;
+    title?: string;
+    buttons?: { type: 'link' | 'button', href: string, label: string }[];
+    filters?: { type: 'link' | 'button', href: string, label: string }[];
+}
+
+export default function Header({onDrawerToggle, buttons, filters, title}: HeaderProps) {
+
+    return (
+        <>
+            <Head title={title} />
+            <AppBar color="primary" position="sticky" elevation={0}>
+                <Toolbar>
+                    <Grid container spacing={1}
+                          sx={{alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
+                        <Grid sx={{display: {sm: 'none', xs: 'block'}}}>
+                            <IconButton
+                                color="inherit"
+                                aria-label="open drawer"
+                                onClick={onDrawerToggle}
+                                edge="start"
+                            >
+                                <MenuIcon/>
+                            </IconButton>
+                        </Grid>
+                        <Typography color="inherit" variant="h5" component="h1">
+                            {title || 'Title'}
+                        </Typography>
+                        <Grid>
+                            <Tooltip title="Alerts • No alerts">
+                                <IconButton color="inherit">
+                                    <NotificationsIcon/>
+                                </IconButton>
+                            </Tooltip>
+                            <IconButton color="inherit" sx={{p: 0.5}}>
+                                <Avatar src="/static/images/avatar/1.jpg" alt="My Avatar"/>
+                            </IconButton>
+                        </Grid>
+                    </Grid>
+                </Toolbar>
+            </AppBar>
+            {buttons && (
+                <AppBar
+                    component="div"
+                    color="primary"
+                    position="sticky"
+                    elevation={1}
+                >
+                    <Toolbar>
+                        <Grid container spacing={1}
+                              sx={{alignItems: 'center',  width: '100%'}}>
+                            <Grid>
+                                <Grid container>
+                                    {buttons && buttons.map((button, index) => (
+                                        <Grid key={index}>
+                                            {button.type === 'link' ? (
+                                                <Button
+                                                    color="info"
+                                                    variant="contained"
+                                                    component={Link as React.ElementType}
+                                                    href={button.href}
+                                                >
+                                                    {button.label}
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    color="inherit"
+                                                    variant="outlined"
+                                                >
+                                                    {button.label}
+                                                </Button>
+                                            )}
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Grid>
+                            {filters && (
+                                <Grid component={ButtonGroup}>
+                                    {filters.map((button, index) => (
+                                        <Grid key={index}>
+                                            {button.type === 'link' ? (
+                                                <Button
+                                                    color="info"
+                                                    variant="contained"
+                                                    component={Link as React.ElementType}
+                                                    href={button.href}
+                                                    disabled={window.location.href === button.href}
+                                                >
+                                                    {button.label}
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    color="inherit"
+                                                    variant="outlined"
+                                                >
+                                                    {button.label}
+                                                </Button>
+                                            )}
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            )}
+                        </Grid>
+                    </Toolbar>
+                </AppBar>
+            )}
+        </>
+    )
+        ;
+}

@@ -1,4 +1,4 @@
-interface PartnerLinks {
+interface PartnerLink {
     id: number;
     name: string;
     url: string;

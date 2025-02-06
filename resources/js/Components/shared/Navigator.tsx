@@ -35,6 +35,12 @@ export default function Navigator(props: DrawerProps) {
             id: 'TDS',
             children: [
                 {
+                    id: 'Visits',
+                    icon: <PeopleIcon />,
+                    link: route('visits.index'),
+                    active: route().current('visits.*'),
+                },
+                {
                     id: 'Partners',
                     icon: <PeopleIcon />,
                     link: route('partners.index'),

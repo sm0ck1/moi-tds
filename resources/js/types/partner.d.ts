@@ -6,5 +6,5 @@ export interface Partner {
     password: string;
     note: string;
     deleted_at: string;
-    partner_links?: PartnerLinks[];
+    partner_links?: PartnerLink[];
 }

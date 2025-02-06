@@ -19,16 +19,22 @@ class VisitUser extends Model
         'device_type',
         'visit_count',
 
-        'partner_link_id',
+        'portal_partner_link_id',
         'portal_id',
         'uniq_user_hash'
+    ];
+
+    protected $casts = [
+        'visit_date' => 'datetime:d.m.Y H:i:s',
+        'created_at' => 'datetime:d.m.Y H:i:s',
+        'updated_at' => 'datetime:d.m.Y H:i:s',
     ];
 
     protected $appends = [
         'country_name', 'country_flag'
     ];
 
-    public function partnerLink(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function portalPartnerLink(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(PartnerLink::class);
     }

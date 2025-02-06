@@ -3,7 +3,7 @@ import {MenuItem, Box, Typography, ListSubheader, Select} from '@mui/material';
 import _ from 'lodash';
 
 type GroupedPartnerLinksProps = {
-    partnerLinks: PartnerLinks[];
+    partnerLinks: PartnerLink[];
     currentChoose: number;
     handleChoice: (e: any) => void;
 }
@@ -19,11 +19,11 @@ const GroupedPartnerLinks = ({partnerLinks, currentChoose, handleChoice}: Groupe
             variant={'outlined'}
             size={'small'}
         >
-            {Object.entries(groupedLinks).map(([partnerName, links]: [partnerName: string, links: PartnerLinks[]]) => (
+            {Object.entries(groupedLinks).map(([partnerName, links]: [partnerName: string, links: PartnerLink[]]) => (
                 <Box key={partnerName}>
                     <ListSubheader>{partnerName}</ListSubheader>
 
-                    {links.map((partnerLink: PartnerLinks) => (
+                    {links.map((partnerLink: PartnerLink) => (
                         <MenuItem
                             key={partnerLink.id}
                             value={partnerLink.id}

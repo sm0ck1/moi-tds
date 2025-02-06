@@ -54,7 +54,9 @@ class PortalController extends Controller
     public function edit(Portal $portal)
     {
         $topics = Topic::all();
-        $portal->load(['portalPartnerLinks']);
+        $portal->load(['portalPartnerLinks' => function ($query) {
+            $query->orderBy('priority');
+        }]);
         $partnerLinks = PartnerLink::with(['partner', 'topic'])->get();
         return Inertia::render('Portal/PortalEdit', [
             'portal' => $portal,

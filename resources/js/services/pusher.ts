@@ -1,6 +1,12 @@
 import Pusher from 'pusher-js';
 import * as PusherTypes from 'pusher-js';
 
+interface IPusherService {
+    subscribe(channel: PusherChannels, event: PusherEvents, callback: (data: any) => void): void;
+    unsubscribe(channel: PusherChannels, event?: PusherEvents): void;
+    disconnect(): void;
+}
+
 export enum PusherChannels {
     visitUser = 'visit-user',
 }
@@ -9,7 +15,7 @@ export enum PusherEvents {
     newVisit = 'new-visit',
 }
 
-export class PusherService {
+export class PusherService implements IPusherService {
     private pusher: Pusher;
     private channels: Map<string, PusherTypes.Channel>;
 

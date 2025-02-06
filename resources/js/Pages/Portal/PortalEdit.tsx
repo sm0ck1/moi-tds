@@ -12,7 +12,7 @@ import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import PortalPartnerLinks from "@/Pages/Portal/Partials/PortalPartnerLinks";
 
-export default function PortalEdit({portal, topics, partnerLinks}: PageProps<{ portal: Portal, topics: Topic[], partnerLinks: PartnerLinks[] }>) {
+export default function PortalEdit({portal, topics, partnerLinks}: PageProps<{ portal: Portal, topics: Topic[], partnerLinks: PartnerLink[] }>) {
 
     const {data, setData, patch, processing, errors} = useForm({
         name: "",

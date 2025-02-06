@@ -93,11 +93,11 @@ export default function SortableFlow({
                         variant={'outlined'}
                         size={'small'}
                     >
-                        {partnerLinks && partnerLinks.length > 0 && Object.entries(_.groupBy(partnerLinks, 'partner.name')).map(([partnerName, links]: [string, PartnerLinks[]]) => [
+                        {partnerLinks && partnerLinks.length > 0 && Object.entries(_.groupBy(partnerLinks, 'partner.name')).map(([partnerName, links]: [string, PartnerLink[]]) => [
                             <ListSubheader key={`header-${partnerName}`}>
                                 {partnerName}
                             </ListSubheader>,
-                            ...links.map((partnerLink: PartnerLinks) => (
+                            ...links.map((partnerLink: PartnerLink) => (
                                 <MenuItem
                                     key={partnerLink.id}
                                     value={partnerLink.id}

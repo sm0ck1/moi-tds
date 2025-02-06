@@ -9,7 +9,7 @@ import {Topic} from "@/types/topic";
 import Typography from "@mui/material/Typography";
 
 export default function PartnerLinksList({partnerLinks, topics}: {
-    partnerLinks: PartnerLinks[],
+    partnerLinks: PartnerLink[],
     topics: Topic[],
 }) {
     const [editMode, setEditMode] = useState(0);

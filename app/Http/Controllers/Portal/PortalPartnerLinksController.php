@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Portal;
 
-use App\Events\VisitUserEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PortalPartnerLinkRequest;
 use App\Models\PortalPartnerLink;
@@ -33,7 +32,7 @@ class PortalPartnerLinksController extends Controller
                 ['partner_link_id', 'conditions', 'priority', 'is_fallback']
             );
         });
-        event(new VisitUserEvent('User visited portal.'));
+
         return redirect()->route('portal.edit', $portalId)->with('success', 'Portal updated.');
     }
 }

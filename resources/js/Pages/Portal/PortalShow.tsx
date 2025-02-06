@@ -9,7 +9,7 @@ import PortalPartnerLinks from "@/Pages/Portal/Partials/PortalPartnerLinks";
 
 export default function PortalShow(
     {portal, partnerLinks}:
-    PageProps<{ portal: Portal, partnerLinks: PartnerLinks[] }>
+    PageProps<{ portal: Portal, partnerLinks: PartnerLink[] }>
 ) {
     console.log('portal', portal)
     return (

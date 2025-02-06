@@ -13,18 +13,17 @@ import {
 } from '@dnd-kit/core';
 import {arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import SortableFlow from "@/Pages/Portal/Partials/SortableFlow";
-import {PusherChannels, PusherEvents, PusherService} from "@/services/pusher";
-import {useEffect} from "react";
+
 
 interface PortalPartnerLinkFormData {
     [key: string]: any;
-    portal_partner_links: PortalPartnerLinks[];
+    portal_partner_links: PortalPartnerLink[];
 }
 
 export default function PortalPartnerLinks({portalId, portalPartnerLinks, partnerLinks}: {
     portalId: number,
-    portalPartnerLinks: PortalPartnerLinks[],
-    partnerLinks: PartnerLinks[],
+    portalPartnerLinks: PortalPartnerLink[],
+    partnerLinks: PartnerLink[],
 }) {
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -33,30 +32,21 @@ export default function PortalPartnerLinks({portalId, portalPartnerLinks, partne
         })
     );
 
+
     const { data, setData, post, errors, hasErrors, processing, wasSuccessful, reset } = useForm<PortalPartnerLinkFormData>({
         portal_partner_links: portalPartnerLinks?.map((link, index) => ({
-            id: link.id,
-            portal_id: link.portal_id,
-            partner_link_id: link.partner_link_id,
-            conditions: link.conditions || {},
-            priority: index,
+            ...link,
             is_fallback: index === portalPartnerLinks.length - 1
         }))
     });
-    const pusherService = new PusherService();
-    useEffect(() => {
-        console.log('subscribing');
-        pusherService.subscribe(PusherChannels.visitUser, PusherEvents.newVisit, (data) => {
-            console.log(data);
 
-        });
+    const updateData = (links: any[]) => {
+        setData('portal_partner_links', links.map((link, index) => ({
+            ...link,
+            priority: index
+        })));
+    };
 
-        return () => {
-            console.log('unsubscribing');
-            pusherService.disconnect();
-        };
-
-    }, []);
 
     const addFlow = () => {
         const newLinks = [];
@@ -85,7 +75,7 @@ export default function PortalPartnerLinks({portalId, portalPartnerLinks, partne
             newLinks.push(data.portal_partner_links[data.portal_partner_links.length - 1]);
         }
 
-        setData('portal_partner_links', newLinks);
+        updateData(newLinks);
     };
 
     const removeFlow = (index: number) => {
@@ -95,7 +85,7 @@ export default function PortalPartnerLinks({portalId, portalPartnerLinks, partne
         if (newLinks.length > 0) {
             newLinks[newLinks.length - 1].is_fallback = true;
         }
-        setData('portal_partner_links', newLinks);
+        updateData(newLinks);
     };
 
     const handleDragEnd = (event: DragEndEvent) => {
@@ -116,11 +106,10 @@ export default function PortalPartnerLinks({portalId, portalPartnerLinks, partne
         }
         newLinks = newLinks.map((item, index) => ({
             ...item,
-            priority: index,
             is_fallback: index === newLinks.length - 1
         }));
 
-        setData('portal_partner_links', newLinks);
+        updateData(newLinks);
     };
 
     const toggleCondition = (flowIndex: number, type: 'country' | 'device', enabled: boolean) => {
@@ -138,7 +127,7 @@ export default function PortalPartnerLinks({portalId, portalPartnerLinks, partne
             const { [type]: _, ...rest } = newLinks[flowIndex].conditions;
             newLinks[flowIndex].conditions = rest;
         }
-        setData('portal_partner_links', newLinks);
+        updateData(newLinks);
     };
 
     const handleSubmit = () => {

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\VisitUserEvent;
 use App\Helpers\UniqUserHash;
 use App\Models\ViewUser;
 use App\Models\VisitUser;
@@ -28,9 +29,9 @@ class StoreVisitJob implements ShouldQueue
     {
 
         $validator = Validator::make($this->data, [
-            'ip' => 'required',
+            'ip'        => 'required',
             'userAgent' => 'required|string',
-            'portalId' => 'required|integer',
+            'portalId'  => 'required|integer',
             'visitDate' => 'required',
         ]);
         if ($validator->fails()) {
@@ -39,10 +40,13 @@ class StoreVisitJob implements ShouldQueue
         }
 
         $uniqUserHash = (new UniqUserHash(
-            $this->data['portalId'],
-            $this->data['ip'],
-            $this->data['userAgent'],
-            $this->data['visitDate']
+            [
+                $this->data['portalId'],
+                $this->data['portalPartnerLinkId'],
+                $this->data['ip'],
+                $this->data['userAgent'],
+                $this->data['visitDate']
+            ]
         ))->generate();
 
         if (VisitUser::where('uniq_user_hash', $uniqUserHash)->exists()) {
@@ -51,15 +55,17 @@ class StoreVisitJob implements ShouldQueue
         }
 
         VisitUser::create([
-            'ip_address' => $this->data['ip'],
-            'user_agent' => $this->data['userAgent'],
-            'referrer' => $this->data['referrer'],
-            'visit_date' => $this->data['visitDate'],
-            'country_code' => $this->data['country_code'],
-            'device_type' => $this->data['deviceType'],
-            'portal_id' => $this->data['portalId'],
-            'partner_link_id' => $this->data['partnerLinkId'],
-            'uniq_user_hash' => $uniqUserHash,
+            'ip_address'             => $this->data['ip'],
+            'user_agent'             => $this->data['userAgent'],
+            'referrer'               => $this->data['referrer'],
+            'visit_date'             => $this->data['visitDate'],
+            'country_code'           => $this->data['country_code'],
+            'device_type'            => $this->data['deviceType'],
+            'portal_id'              => $this->data['portalId'],
+            'portal_partner_link_id' => $this->data['portalPartnerLinkId'],
+            'uniq_user_hash'         => $uniqUserHash,
         ]);
+
+        event(new VisitUserEvent('User visited portal.'));
     }
 }

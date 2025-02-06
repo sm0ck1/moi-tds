@@ -19,9 +19,6 @@ return new class extends Migration
             $table->foreignId('portal_id')
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->foreignId('partner_id')
-                ->constrained()
-                ->cascadeOnDelete();
             $table->string('ip_address', 45); // IPv6
             $table->string('uniq_user_hash', 32); // md5
             $table->string('user_agent');

@@ -1,4 +1,4 @@
-interface PortalPartnerLinks {
+interface PortalPartnerLink {
     id: number;
     portal_id: number;
     partner_link_id: number;

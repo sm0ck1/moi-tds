@@ -10,4 +10,16 @@ export default defineConfig({
         }),
         react(),
     ],
+    build: {
+        // generate manifest.json in outDir
+        manifest: true,
+        modulePreload: {
+            resolveDependencies: () => [],
+        },
+        rollupOptions: {
+
+            // overwrite default .html entry
+            input: 'resources/js/app.tsx',
+        },
+    },
 });

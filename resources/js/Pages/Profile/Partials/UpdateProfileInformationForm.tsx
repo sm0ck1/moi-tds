@@ -1,10 +1,9 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
+
 import TextInput from '@/Components/ui/TextInput';
 import { Transition } from '@headlessui/react';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
+import Button from "@mui/material/Button";
 
 export default function UpdateProfileInformation({
     mustVerifyEmail,
@@ -43,7 +42,6 @@ export default function UpdateProfileInformation({
 
             <form onSubmit={submit} className="mt-6 space-y-6">
                 <div>
-                    <InputLabel htmlFor="name" value="Name" />
 
                     <TextInput
                         id="name"
@@ -55,11 +53,9 @@ export default function UpdateProfileInformation({
                         autoComplete="name"
                     />
 
-                    <InputError className="mt-2" message={errors.name} />
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
 
                     <TextInput
                         id="email"
@@ -71,7 +67,6 @@ export default function UpdateProfileInformation({
                         autoComplete="username"
                     />
 
-                    <InputError className="mt-2" message={errors.email} />
                 </div>
 
                 {mustVerifyEmail && user.email_verified_at === null && (
@@ -98,7 +93,7 @@ export default function UpdateProfileInformation({
                 )}
 
                 <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                    <Button disabled={processing}>Save</Button>
 
                     <Transition
                         show={recentlySuccessful}

@@ -8,14 +8,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run composer install
-        run: |
-          composer install --no-interaction --optimize-autoloader
-      - name: NPM
-        run: |
-          npm install
-          npm run build
-
+#      - name: Run composer install
+#        run: |
+#          composer install --no-interaction --optimize-autoloader
+#      - name: NPM
+#        run: |
+#          npm install
+#          npm run build
+      - name: Debug paths
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          port: ${{ secrets.REMOTE_PORT }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_KEY }}
+          passphrase: ${{ secrets.REMOTE_PASSPHRASE }}
+          script: |
+            echo "Current directory:"
+            pwd
+            echo "Testing target path:"
+            ls -la ${{ secrets.REMOTE_PATH }}
+            echo "Parent directory:"
+            ls -la $(dirname ${{ secrets.REMOTE_PATH }})
       - name: rsync deploy
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -27,13 +41,6 @@ jobs:
           remote_key: ${{secrets.REMOTE_KEY}}
           remote_key_pass: ${{ secrets.REMOTE_PASSPHRASE }}
           remote_path: ${{secrets.REMOTE_PATH}}
-          script: |
-            echo "Current directory:"
-            pwd
-            echo "Testing target path:"
-            ls -la ${{ secrets.REMOTE_PATH }}
-            echo "Parent directory:"
-            ls -la $(dirname ${{ secrets.REMOTE_PATH }})
       - name: Debug and Setup Project on Server
         uses: appleboy/ssh-action@master
         with:

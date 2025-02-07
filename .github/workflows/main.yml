@@ -25,6 +25,7 @@ jobs:
           remote_port: ${{secrets.REMOTE_PORT}}
           remote_user: ${{secrets.REMOTE_USER}}
           remote_key: ${{secrets.REMOTE_KEY}}
+          remote_key_pass: ${{ secrets.REMOTE_PASSPHRASE }}
           remote_path: ${{secrets.REMOTE_PATH}}
       - name: Debug and Setup Project on Server
         uses: appleboy/ssh-action@master

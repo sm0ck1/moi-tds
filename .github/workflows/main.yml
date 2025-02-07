@@ -35,7 +35,3 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_KEY }}
           passphrase: ${{ secrets.REMOTE_PASSPHRASE }}
-          script: |
-            cd ${{ secrets.REMOTE_PATH }}
-            docker exec ms-php83 composer install
-            docker exec ms-php83 php artisan storage:link

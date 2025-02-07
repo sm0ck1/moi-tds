@@ -7,3 +7,4 @@ storage/framework/session/*
 storage/framework/views/*
 storage/logs/*
 storage/app/*
+public/storage

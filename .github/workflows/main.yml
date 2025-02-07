@@ -27,6 +27,13 @@ jobs:
           remote_key: ${{secrets.REMOTE_KEY}}
           remote_key_pass: ${{ secrets.REMOTE_PASSPHRASE }}
           remote_path: ${{secrets.REMOTE_PATH}}
+          script: |
+            echo "Current directory:"
+            pwd
+            echo "Testing target path:"
+            ls -la ${{ secrets.REMOTE_PATH }}
+            echo "Parent directory:"
+            ls -la $(dirname ${{ secrets.REMOTE_PATH }})
       - name: Debug and Setup Project on Server
         uses: appleboy/ssh-action@master
         with:

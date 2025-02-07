@@ -37,4 +37,5 @@ jobs:
           passphrase: ${{ secrets.REMOTE_PASSPHRASE }}
           script: |
             cd ${{ secrets.REMOTE_PATH }}
-            php artisan storage:link
+            docker exec ms-php83 composer install
+            docker exec ms-php83 php artisan storage:link

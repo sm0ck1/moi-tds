@@ -15,25 +15,10 @@ jobs:
 #        run: |
 #          npm install
 #          npm run build
-      - name: Debug paths
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          port: ${{ secrets.REMOTE_PORT }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.REMOTE_KEY }}
-          passphrase: ${{ secrets.REMOTE_PASSPHRASE }}
-          script: |
-            echo "Current directory:"
-            pwd
-            echo "Testing target path:"
-            ls -la ${{ secrets.REMOTE_PATH }}
-            echo "Parent directory:"
-            ls -la $(dirname ${{ secrets.REMOTE_PATH }})
       - name: rsync deploy
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avzr --delete --exclude-from=.rsyncignore
+          switches: -avvzr --delete --progress --stats --exclude-from=.rsyncignore
           path: .
           remote_host: ${{secrets.REMOTE_HOST}}
           remote_port: ${{secrets.REMOTE_PORT}}

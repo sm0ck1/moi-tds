@@ -22,6 +22,7 @@ jobs:
           switches: -avzr --delete --exclude-from=.rsyncignore
           path: .
           remote_host: ${{secrets.REMOTE_HOST}}
+          remote_port: ${{secrets.REMOTE_PORT}}
           remote_user: ${{secrets.REMOTE_USER}}
           remote_key: ${{secrets.REMOTE_KEY}}
           remote_path: ${{secrets.REMOTE_PATH}}

@@ -8,13 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-#      - name: Run composer install
-#        run: |
-#          composer install --no-interaction --optimize-autoloader
-#      - name: NPM
-#        run: |
-#          npm install
-#          npm run build
+      - name: Run composer install
+        run: |
+          composer install --no-interaction --optimize-autoloader
+      - name: NPM
+        run: |
+          npm install
+          npm run build
 
       - name: rsync deploy
         uses: burnett01/rsync-deployments@7.0.1

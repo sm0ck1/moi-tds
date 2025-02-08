@@ -19,16 +19,17 @@ export class PusherService implements IPusherService {
     private pusher: Pusher;
     private channels: Map<string, PusherTypes.Channel>;
 
-    constructor() {
-        const key = import.meta.env.VITE_PUSHER_APP_KEY ?? '';
-        const cluster = import.meta.env.VITE_PUSHER_APP_CLUSTER ?? '';
+    constructor(
+        pusherKey: string
+    ) {
+        const key = pusherKey ?? import.meta.env.VITE_PUSHER_APP_KEY ?? '';
 
-        if (!key || !cluster) {
-            throw new Error('Pusher key and cluster must be provided');
+        if (!key) {
+            throw new Error('Pusher key  must be provided');
         }
 
         this.pusher = new Pusher(key, {
-            cluster: cluster,
+            cluster: 'eu',
 
             enabledTransports: ['ws', 'wss']
         });

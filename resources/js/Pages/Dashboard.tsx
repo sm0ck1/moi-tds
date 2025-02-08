@@ -13,6 +13,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import DashboardLayout from "@/Components/shared/DashboardLayout";
 
 export default function Dashboard() {
+
     return (
         <DashboardLayout
         >

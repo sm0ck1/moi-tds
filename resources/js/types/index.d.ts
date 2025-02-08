@@ -8,6 +8,9 @@ export interface User {
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
+    pusher: {
+        key: string
+    },
     auth: {
         user: User;
     };

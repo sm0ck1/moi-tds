@@ -17,15 +17,15 @@ import Pagination from '@mui/material/Pagination';
 
 type VisitUsersIndexProps = PageProps<{ visitUsers: PaginationInterface<VisitUser> }>
 
-export default function VisitUsers({visitUsers}: VisitUsersIndexProps) {
-
+export default function VisitUsers({visitUsers, pusher}: VisitUsersIndexProps) {
+    const pusherService = new PusherService(pusher.key)
     useEffect(() => {
-        window.Pusher.subscribe(PusherChannels.visitUser, PusherEvents.newVisit, (data: any) => {
+        pusherService.subscribe(PusherChannels.visitUser, PusherEvents.newVisit, (data: any) => {
             router.reload();
         });
 
         return () => {
-            window.Pusher.unsubscribe(PusherChannels.visitUser, PusherEvents.newVisit);
+            pusherService.unsubscribe(PusherChannels.visitUser, PusherEvents.newVisit);
         };
 
     }, []);

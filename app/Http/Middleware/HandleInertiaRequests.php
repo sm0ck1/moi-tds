@@ -2,8 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Topic;
-use Closure;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -36,6 +34,9 @@ class HandleInertiaRequests extends Middleware
             'vite_asset_url' => env('APP_URL') . ':5174',
             'auth' => [
                 'user' => $request->user(),
+            ],
+            'pusher' => [
+                'key' => config('broadcasting.connections.pusher.key'),
             ],
         ];
     }

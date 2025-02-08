@@ -35,3 +35,5 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_KEY }}
           passphrase: ${{ secrets.REMOTE_PASSPHRASE }}
+          script: |
+            docker restart ms-php83

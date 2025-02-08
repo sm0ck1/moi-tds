@@ -14,7 +14,7 @@ Route::withoutMiddleware(['web'])->get('r/{short_url}', [RedirectController::cla
 
 Route::middleware(['auth', 'admin'])->prefix('dashboard')->group(function () {
 
-    Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index']);
+    Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::resource('partners', PartnerController::class);
     Route::resource('topic', TopicController::class);
     Route::resource('portal', PortalController::class);

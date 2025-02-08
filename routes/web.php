@@ -9,16 +9,12 @@ use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\Topic\TopicController;
 use App\Http\Controllers\VisitUsers\VisitUsersController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::withoutMiddleware(['web'])->get('r/{short_url}', [RedirectController::class, 'redirect']);
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'admin'])->prefix('dashboard')->group(function () {
 
-Route::middleware('auth')->prefix('dashboard')->group(function () {
-
+    Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index']);
     Route::resource('partners', PartnerController::class);
     Route::resource('topic', TopicController::class);
     Route::resource('portal', PortalController::class);

@@ -39,23 +39,23 @@ class DatabaseSeeder extends Seeder
                 'name' => $name
             ]);
         }
-        Domain::factory()->create([
-            'name' => 'lookonlooks.com',
-            'date_registration' => '2021-01-01',
-            'dns_provider_login' => 'admin',
-            'dns_provider' => 'GoDaddy',
-        ]);
-
-        Partner::factory()->count(rand(5, 15))->create();
-        PartnerLink::factory()->count(rand(5, 15))->create();
-        Portal::factory()->count(rand(5, 15))->create();
-        Portal::all()->each(function ($portal) {
-            PortalPartnerLink::factory()
-                ->forPortal($portal->id, fake()->numberBetween(2, 5))
-                ->create();
-        });
-
-        VisitUser::factory()->count(rand(120, 265))->create();
+//        Domain::factory()->create([
+//            'name' => 'lookonlooks.com',
+//            'date_registration' => '2021-01-01',
+//            'dns_provider_login' => 'admin',
+//            'dns_provider' => 'GoDaddy',
+//        ]);
+//
+//        Partner::factory()->count(rand(5, 15))->create();
+//        PartnerLink::factory()->count(rand(5, 15))->create();
+//        Portal::factory()->count(rand(5, 15))->create();
+//        Portal::all()->each(function ($portal) {
+//            PortalPartnerLink::factory()
+//                ->forPortal($portal->id, fake()->numberBetween(2, 5))
+//                ->create();
+//        });
+//
+//        VisitUser::factory()->count(rand(120, 265))->create();
         //$this->call(VisitUserSeeder::class);
 
 

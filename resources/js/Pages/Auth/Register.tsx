@@ -4,6 +4,7 @@ import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -15,7 +16,6 @@ export default function Register() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-
         post(route('register'), {
             onFinish: () => reset('password', 'password_confirmation'),
         });
@@ -25,16 +25,24 @@ export default function Register() {
         <GuestLayout>
             <Head title="Register" />
 
-            <form onSubmit={submit}>
+            <Box component="form" noValidate sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+                '& > :not(style)': {m: 1, width: '100%'}
+            }} onSubmit={submit}>
                 <div>
 
                     <TextInput
                         id="name"
+                        label={'Name'}
                         name="name"
                         value={data.name}
                         className="mt-1 block w-full"
                         autoComplete="name"
                         isFocused={true}
+                        fullWidth
                         onChange={(e) => setData('name', e.target.value)}
                         required
                     />
@@ -44,7 +52,9 @@ export default function Register() {
                 <div className="mt-4">
 
                     <TextInput
+                        fullWidth
                         id="email"
+                        label={'Email'}
                         type="email"
                         name="email"
                         value={data.email}
@@ -59,7 +69,9 @@ export default function Register() {
                 <div className="mt-4">
 
                     <TextInput
+                        fullWidth
                         id="password"
+                        label={'Password'}
                         type="password"
                         name="password"
                         value={data.password}
@@ -74,7 +86,9 @@ export default function Register() {
                 <div className="mt-4">
 
                     <TextInput
+                        fullWidth
                         id="password_confirmation"
+                        label={'Password confirmation'}
                         type="password"
                         name="password_confirmation"
                         value={data.password_confirmation}
@@ -88,7 +102,13 @@ export default function Register() {
 
                 </div>
 
-                <div className="mt-4 flex items-center justify-end">
+                <Box sx={{display: 'flex',
+                    alignItems: {xs: 'flex-start', sm: 'center'},
+                    flexDirection: {xs: 'column', sm: 'row'},
+                    gap: 2,
+                    width: '100%',
+                    justifyContent: 'space-between'
+                }}>
                     <Link
                         href={route('login')}
                         className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -96,11 +116,11 @@ export default function Register() {
                         Already registered?
                     </Link>
 
-                    <Button className="ms-4" disabled={processing}>
+                    <Button variant='contained' type={'submit'} disabled={processing}>
                         Register
                     </Button>
-                </div>
-            </form>
+                </Box>
+            </Box>
         </GuestLayout>
     );
 }

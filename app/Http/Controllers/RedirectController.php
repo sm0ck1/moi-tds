@@ -26,7 +26,8 @@ class RedirectController extends Controller
 
         $ip = $request->get('ip') ?? $request->ip() ?? null;
         $userAgent = $request->get('user_agent') ?? $request->header('User-Agent') ?? null;
-        $referrer = $request->header('Referer') ?? $request->get('referrer') ?? '';
+        $referrer = $request->get('referrer') ?? $request->header('Referer') ?? '';
+        $tracker = $request->get('tracker') ?? '';
 
         if (empty($userAgent) || empty($ip)) {
             return response()->json(['error' => 'Bad request'], 403);
@@ -66,27 +67,30 @@ class RedirectController extends Controller
                 continue;
             }
 
-            $external_url = str_replace('{tracker}', $short_url, $link->partnerLink->url);
+            $external_url = $link->partnerLink->url;
+            if ($tracker) {
+                $external_url = str_replace('{tracker}', $short_url, $external_url);
+            }
             $portal_partner_link_id = $link->partnerLink->id;
             break;
         }
 
         StoreVisitJob::dispatch([
-            'deviceType' => $deviceType,
-            'ip' => $ip,
-            'userAgent' => $userAgent,
-            'referrer' => $referrer,
-            'visitDate' => $visitDate,
-            'country_code' => $checkIp['country_code'],
-            'portalId' => $portal->id,
+            'deviceType'          => $deviceType,
+            'ip'                  => $ip,
+            'userAgent'           => $userAgent,
+            'referrer'            => $referrer,
+            'visitDate'           => $visitDate,
+            'country_code'        => $checkIp['country_code'],
+            'portalId'            => $portal->id,
             'portalPartnerLinkId' => $portal_partner_link_id,
         ]);
 
-//return redirect()->away('https://example.com');
-        return response()->json([
-            'success' => $external_url,
-            'checkIp' => $checkIp,
-        ]);
+        return redirect()->away($external_url);
+//        return response()->json([
+//            'success' => $external_url,
+//            'checkIp' => $checkIp,
+//        ]);
 
     }
 }

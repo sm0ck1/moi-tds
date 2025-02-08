@@ -11,8 +11,8 @@ export default defineConfig({
         react(),
     ],
     build: {
-        // generate manifest.json in outDir
         manifest: true,
+        outDir: 'public/build',
         modulePreload: {
             resolveDependencies: () => [],
         },

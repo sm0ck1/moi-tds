@@ -39,4 +39,4 @@ jobs:
             docker exec ms-php83 chown -R www-data:www-data /var/www/moi-tds/storage
             docker exec ms-php83 chmod -R 775 /var/www/moi-tds/storage
             docker restart ms-php83
-            docker restart ms-worker
+            docker restart ms-queue-worker

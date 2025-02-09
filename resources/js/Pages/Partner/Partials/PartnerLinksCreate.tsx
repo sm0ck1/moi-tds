@@ -1,13 +1,13 @@
-import {Box, FormControl, InputLabel, MenuItem, Paper, Select, Typography} from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import {Box, FormControl, FormHelperText, InputLabel, MenuItem, Paper, Select, Typography} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import {useForm} from "@inertiajs/react";
 import Button from "@mui/material/Button";
 import {Topic} from "@/types/topic";
 import React, {useEffect} from "react";
 import {Partner} from "@/types/partner";
+import AppBar from "@mui/material/AppBar";
 
-export default function PartnerLinksCreate({partner, topics}: {partner: Partner, topics: Topic[]}) {
+export default function PartnerLinksCreate({partner, topics}: { partner: Partner, topics: Topic[] }) {
 
     const {data, setData, post, processing, errors, hasErrors, wasSuccessful, reset} = useForm({
         name: "",
@@ -29,7 +29,7 @@ export default function PartnerLinksCreate({partner, topics}: {partner: Partner,
 
 
     useEffect(() => {
-        if (hasErrors){
+        if (hasErrors) {
             console.log(errors);
         }
     }, [hasErrors]);
@@ -70,15 +70,26 @@ export default function PartnerLinksCreate({partner, topics}: {partner: Partner,
                     </Select>
                 </FormControl>
             )}
-            <TextField
-                fullWidth
-                size={'small'}
-                label="URL"
-                value={data.url}
-                error={!!errors.url}
-                helperText={errors.url}
-                onChange={e => setData('url', e.target.value)}
-            />
+            <FormControl fullWidth variant={'outlined'}>
+                <TextField
+                    fullWidth
+                    size={'small'}
+                    label="URL"
+                    value={data.url}
+                    error={!!errors.url}
+                    helperText={errors.url}
+                    onChange={e => setData('url', e.target.value)}
+                />
+                <FormHelperText variant={'standard'} sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1
+                }}>
+                    <Typography variant={'caption'}>{"{short_link}"} = Identification for tracker</Typography>
+                    <Typography variant={'caption'}>{"{uniq_user_hash}"} = Uniq user click</Typography>
+                </FormHelperText>
+            </FormControl>
+
             <TextField
                 fullWidth
                 size={'small'}

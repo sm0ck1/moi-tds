@@ -20,7 +20,7 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
             $table->string('ip_address', 45); // IPv6
-            $table->string('uniq_user_hash', 32); // md5
+            $table->string('uniq_user_hash', 40); // md5 + date
             $table->string('user_agent');
             $table->string('country_code', 2);
             $table->string('device_type', 50);

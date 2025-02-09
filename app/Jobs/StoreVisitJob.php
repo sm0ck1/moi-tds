@@ -39,18 +39,8 @@ class StoreVisitJob implements ShouldQueue
             return false;
         }
 
-        $uniqUserHash = (new UniqUserHash(
-            [
-                $this->data['portalId'],
-                $this->data['portalPartnerLinkId'],
-                $this->data['ip'],
-                $this->data['userAgent'],
-                $this->data['visitDate']
-            ]
-        ))->generate();
-
-        if (VisitUser::where('uniq_user_hash', $uniqUserHash)->exists()) {
-            VisitUser::where('uniq_user_hash', $uniqUserHash)->increment('visit_count');
+        if (VisitUser::where('uniq_user_hash', $this->data['uniq_user_hash'])->exists()) {
+            VisitUser::where('uniq_user_hash', $this->data['uniq_user_hash'])->increment('visit_count');
             return response()->json(['success' => 'add visit count']);
         }
 
@@ -63,7 +53,7 @@ class StoreVisitJob implements ShouldQueue
             'device_type'            => $this->data['deviceType'],
             'portal_id'              => $this->data['portalId'],
             'portal_partner_link_id' => $this->data['portalPartnerLinkId'],
-            'uniq_user_hash'         => $uniqUserHash,
+            'uniq_user_hash'         => $this->data['uniq_user_hash'],
         ]);
 
         event(new VisitUserEvent('User visited portal.'));

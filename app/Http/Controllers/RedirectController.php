@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\UniqUserHash;
 use App\Jobs\StoreVisitJob;
 use App\Models\Portal;
 use App\Models\VisitUser;
 use App\Services\CheckIp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Jenssegers\Agent\Agent;
 
 class RedirectController extends Controller
@@ -15,6 +17,20 @@ class RedirectController extends Controller
 
     public function redirect(Request $request, $short_url)
     {
+
+        $ip = $request->get('ip') ?? $request->ip() ?? null;
+        $userAgent = $request->get('user_agent') ?? $request->header('User-Agent') ?? null;
+        $referrer = $request->get('referrer') ?? $request->header('Referer') ?? '';
+        $tracker = $request->get('t') ?? '';
+
+        if (empty($userAgent) || empty($ip)) {
+            return response()->json(['error' => 'Bad request'], 403);
+        }
+
+        if (Str::contains($userAgent, ['bot', 'spider', 'crawler', 'curl', 'fetch', 'wget', 'slurp', 'python', 'go-http-client'])) {
+            return response()->json(['error' => 'Permission denied'], 403);
+        }
+
         $portal = Portal::select(['id'])->with([
             'portalPartnerLinks'
         ])->where('short_url', $short_url)->firstOrFail();
@@ -22,24 +38,8 @@ class RedirectController extends Controller
         if (!$portal) {
             return response()->json(['error' => 'Not found'], 404);
         }
+
         $ipCheck = new CheckIp();
-
-        $ip = $request->get('ip') ?? $request->ip() ?? null;
-        $userAgent = $request->get('user_agent') ?? $request->header('User-Agent') ?? null;
-        $referrer = $request->get('referrer') ?? $request->header('Referer') ?? '';
-        $tracker = $request->get('tracker') ?? '';
-
-        if (empty($userAgent) || empty($ip)) {
-            return response()->json(['error' => 'Bad request'], 403);
-        }
-
-
-//        $external_url = str_replace('{tracker}', $portal->name, $portal->partnerLink->url);
-//        $external_url = str_replace('{cid}', $portal->id, $external_url);
-
-//        if($ip == '127.0.0.1') {
-//            return response()->json(['success' => $external_url]);
-//        }
         $checkIp = $ipCheck->checkIp($ip, $userAgent);
         if (isset($checkIp['error'])) {
             return response()->json(['error' => $checkIp['error']], 429);
@@ -49,6 +49,7 @@ class RedirectController extends Controller
         $agent->setUserAgent($userAgent);
         $deviceType = $agent->isMobile() || $agent->isTablet() ? 'mobile' : 'desktop';
         $visitDate = Carbon::now()->format('Y-m-d');
+
 
         $external_url = '';
         $portal_partner_link_id = 0;
@@ -68,14 +69,31 @@ class RedirectController extends Controller
             }
 
             $external_url = $link->partnerLink->url;
-            if ($tracker) {
-                $external_url = str_replace('{tracker}', $short_url, $external_url);
-            }
+
             $portal_partner_link_id = $link->partnerLink->id;
             break;
         }
 
+        $uniqUserHash = (new UniqUserHash(
+            [
+                $portal->id,
+                $portal_partner_link_id,
+                $ip,
+                $userAgent,
+                $visitDate
+            ]
+        ))->generate() . Str::replace('-', '', $visitDate);
+
+        if ($tracker) {
+            $external_url = str_replace('{short_link}', $tracker, $external_url);
+        }
+
+        $external_url = str_replace('{short_link}', $short_url, $external_url);
+        $external_url = str_replace('{uniq_user_hash}', $uniqUserHash, $external_url);
+
+
         StoreVisitJob::dispatch([
+            'uniq_user_hash'      => $uniqUserHash,
             'deviceType'          => $deviceType,
             'ip'                  => $ip,
             'userAgent'           => $userAgent,
@@ -85,7 +103,7 @@ class RedirectController extends Controller
             'portalId'            => $portal->id,
             'portalPartnerLinkId' => $portal_partner_link_id,
         ]);
-
+        dd($external_url);
         return redirect()->away($external_url);
 //        return response()->json([
 //            'success' => $external_url,

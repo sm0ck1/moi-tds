@@ -75,14 +75,14 @@ class RedirectController extends Controller
         }
 
         $uniqUserHash = (new UniqUserHash(
-            [
-                $portal->id,
-                $portal_partner_link_id,
-                $ip,
-                $userAgent,
-                $visitDate
-            ]
-        ))->generate() . Str::replace('-', '', $visitDate);
+                [
+                    $portal->id,
+                    $portal_partner_link_id,
+                    $ip,
+                    $userAgent,
+                    $visitDate
+                ]
+            ))->generate() . Str::replace('-', '', $visitDate);
 
         if ($tracker) {
             $external_url = str_replace('{short_link}', $tracker, $external_url);
@@ -102,8 +102,10 @@ class RedirectController extends Controller
             'country_code'        => $checkIp['country_code'],
             'portalId'            => $portal->id,
             'portalPartnerLinkId' => $portal_partner_link_id,
+            'external_url'        => $external_url,
+            'tracker'             => $tracker ?? '',
         ]);
-//        dd($external_url);
+        dd($external_url);
         return redirect()->away($external_url);
 //        return response()->json([
 //            'success' => $external_url,

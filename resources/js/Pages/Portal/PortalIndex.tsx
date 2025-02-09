@@ -17,6 +17,7 @@ import {Portal} from "@/types/portal";
 import {Info} from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import Tooltip from "@mui/material/Tooltip";
+import TextInput from "@/Components/ui/TextInput";
 
 export default function PortalIndex({portals}: PageProps<{ portals: Portal[] }>) {
     const {delete: destroy, processing} = useForm();
@@ -67,7 +68,14 @@ export default function PortalIndex({portals}: PageProps<{ portals: Portal[] }>)
                                         {row.name}
                                     </Box>
                                 </TableCell>
-                                <TableCell>{row.short_url}</TableCell>
+                                <TableCell>
+                                    <TextInput
+                                        label=""
+                                        value={row.short_url}
+                                        disabled
+                                        size={'small'}
+                                    />
+                                </TableCell>
                                 <TableCell>{row.topic.name}</TableCell>
                                 <TableCell>{row.portal_partner_links_count}</TableCell>
 

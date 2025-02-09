@@ -44,7 +44,9 @@ export default function VisitUsers({visitUsers, pusher}: VisitUsersIndexProps) {
                     <TableHead>
                         <TableRow>
                             <TableCell>IP Address</TableCell>
-                            <TableCell>Referrer</TableCell>
+                            <TableCell>Visit count</TableCell>
+                            <TableCell>Tracker</TableCell>
+                            <TableCell>Portal</TableCell>
                             <TableCell>Visit Date</TableCell>
                             <TableCell>Country Code</TableCell>
                         </TableRow>
@@ -60,7 +62,9 @@ export default function VisitUsers({visitUsers, pusher}: VisitUsersIndexProps) {
                                            target="_blank"
                                         >{visit.ip_address}</a>
                                     </TableCell>
-                                    <TableCell>{visit.referrer}</TableCell>
+                                    <TableCell>{visit.visit_count}</TableCell>
+                                    <TableCell>{visit.tracker}</TableCell>
+                                    <TableCell>{visit.portal.short_url}</TableCell>
                                     <TableCell>{visit.created_at}</TableCell>
                                     <TableCell>{visit.country_code}</TableCell>
                                 </TableRow>
@@ -68,19 +72,25 @@ export default function VisitUsers({visitUsers, pusher}: VisitUsersIndexProps) {
                                     <TableCell colSpan={9}>
                                         <Box sx={{p: 2}}>
                                             <Box>
-                                                <b>{visit.device_type}</b>: {visit.user_agent}
+                                                <b>Device</b>: {visit.device_type}
                                             </Box>
                                             <Box>
-                                                <b>Portal</b>: <i>{visit.portal.name}</i> {visit.portal.short_url}
+                                                <b>User Agent</b>: {visit.user_agent}
                                             </Box>
                                             <Box>
-                                                <b>Visit Count</b>: {visit.visit_count}
+                                                <b>Portal</b>: {visit.portal.name}
+                                            </Box>
+                                            <Box>
+                                                <b>Referrer</b>: {visit.referrer}
                                             </Box>
                                             <Box>
                                                 <b>Partner</b>: {visit.portal_partner_link?.partner.name}
                                             </Box>
                                             <Box>
                                                 <b>Partner Link</b>: {visit.portal_partner_link?.name} {visit.portal_partner_link?.url}
+                                            </Box>
+                                            <Box>
+                                                <b>Redirected to</b>: {visit.external_url}
                                             </Box>
                                         </Box>
                                     </TableCell>

@@ -3,8 +3,6 @@
 namespace App\Jobs;
 
 use App\Events\VisitUserEvent;
-use App\Helpers\UniqUserHash;
-use App\Models\ViewUser;
 use App\Models\VisitUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -54,6 +52,8 @@ class StoreVisitJob implements ShouldQueue
             'portal_id'              => $this->data['portalId'],
             'portal_partner_link_id' => $this->data['portalPartnerLinkId'],
             'uniq_user_hash'         => $this->data['uniq_user_hash'],
+            'external_url'           => $this->data['external_url'],
+            'tracker'           => $this->data['tracker'],
         ]);
 
         event(new VisitUserEvent('User visited portal.'));

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('ip_address', 45); // IPv6
             $table->string('uniq_user_hash', 40); // md5 + date
             $table->string('user_agent');
+            $table->string('external_url')->nullable();
+            $table->string('tracker')->nullable()->default('');
             $table->string('country_code', 2);
             $table->string('device_type', 50);
             $table->string('referrer')->nullable();

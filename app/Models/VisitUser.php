@@ -14,6 +14,8 @@ class VisitUser extends Model
         'ip_address',
         'user_agent',
         'referrer',
+        'external_url',
+        'tracker',
         'visit_date',
         'country_code',
         'device_type',

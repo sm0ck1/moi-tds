@@ -103,7 +103,7 @@ class RedirectController extends Controller
             'portalId'            => $portal->id,
             'portalPartnerLinkId' => $portal_partner_link_id,
         ]);
-        dd($external_url);
+//        dd($external_url);
         return redirect()->away($external_url);
 //        return response()->json([
 //            'success' => $external_url,

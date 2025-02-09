@@ -91,8 +91,7 @@ class RedirectController extends Controller
         $external_url = str_replace('{short_link}', $short_url, $external_url);
         $external_url = str_replace('{uniq_user_hash}', $uniqUserHash, $external_url);
 
-
-        StoreVisitJob::dispatch([
+        $data = [
             'uniq_user_hash'      => $uniqUserHash,
             'deviceType'          => $deviceType,
             'ip'                  => $ip,
@@ -104,13 +103,14 @@ class RedirectController extends Controller
             'portalPartnerLinkId' => $portal_partner_link_id,
             'external_url'        => $external_url,
             'tracker'             => $tracker ?? '',
-        ]);
-        dd($external_url);
+        ];
+
+        StoreVisitJob::dispatch($data);
+
+        if (config('app.debug')) {
+            return response()->json($data);
+        }
         return redirect()->away($external_url);
-//        return response()->json([
-//            'success' => $external_url,
-//            'checkIp' => $checkIp,
-//        ]);
 
     }
 }

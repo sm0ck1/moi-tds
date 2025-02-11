@@ -2,4 +2,4 @@
 
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::command('delete:old-data')->hourly();
+Schedule::command('app:delete-old-data')->hourly();

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::withoutMiddleware(['web'])->get('r/{short_url}', [RedirectController::class, 'redirect']);
 Route::withoutMiddleware(['web'])->post('r/confirm', [RedirectController::class, 'confirmRedirect']);
+Route::withoutMiddleware(['web'])->post('r/analytics', [RedirectController::class, 'analytics']);
 
 Route::middleware(['auth', 'admin'])->prefix('dashboard')->group(function () {
 

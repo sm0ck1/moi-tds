@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\UniqUserHash;
+use App\Jobs\CheckVisitJob;
 use App\Jobs\StoreVisitJob;
 use App\Jobs\UpdateVisitJob;
 use App\Models\Portal;
@@ -105,13 +106,12 @@ class RedirectController extends Controller
             'tracker'             => $tracker ?? '',
         ];
 
-        if (!$request->hasCookie('cat')) {
-            StoreVisitJob::dispatch($data);
-        }
+        StoreVisitJob::dispatch($data);
 
         return response()
             ->view('landings.dating.only_button', [
-                'url' => base64_encode($external_url)
+                'url'              => base64_encode($external_url),
+                'user_unique_hash' => $uniqUserHash,
             ])
             ->cookie('cat', $uniqUserHash, 60, null, null, false, false);
 
@@ -127,6 +127,7 @@ class RedirectController extends Controller
         $validator = Validator::make($request->all(), [
             'metrics' => 'string',
             'url'     => 'string',
+            'uh'      => 'string',
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => 'Bad request'], 403);
@@ -136,7 +137,7 @@ class RedirectController extends Controller
         try {
             $metrics = json_decode(base64_decode($data['metrics']), true);
             $external_url = base64_decode($data['url']);
-            $user_unique_hash = $request->cookie('cat');
+            $user_unique_hash = $data['uh'];
             if (!$user_unique_hash || !$external_url || !$metrics) {
                 return response()->json(['error' => 'Bad request'], 403);
             }
@@ -156,6 +157,34 @@ class RedirectController extends Controller
                 ->header('Pragma', 'no-cache')
                 ->header('Referrer-Policy', 'no-referrer')
                 ->header('Expires', '0');
+        }
+    }
+
+    public function analytics(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'metrics' => 'string',
+            'uh'      => 'string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Bad request'], 403);
+        }
+        $data = $validator->validated();
+        $user_unique_hash = $data['uh'];
+        try {
+            $metrics = json_decode(base64_decode($data['metrics']), true);
+            if (!$user_unique_hash || !$metrics) {
+                return response()->json(['error' => 'Bad request'], 403);
+            }
+
+            CheckVisitJob::dispatch([
+                'uniq_user_hash' => $user_unique_hash,
+                'metrics'        => $metrics,
+            ]);
+
+
+        } catch (\Exception $e) {
+            return false;
         }
     }
 

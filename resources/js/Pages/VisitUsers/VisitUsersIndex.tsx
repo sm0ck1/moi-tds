@@ -99,14 +99,21 @@ export default function VisitUsers({visitUsers, pusher}: VisitUsersIndexProps) {
                                             </Box>
                                             <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                                                 <b>Metrics:</b>
-                                                {visit.metrics && Object.entries(visit.metrics).map(([key, value]) => (
-                                                    <Box component="span" key={key} sx={{ mr: 2 }}>
+                                                {visit.metrics && Object.entries(visit.metrics).map(([key, value]: any) => (
+                                                    <Box component="span" key={key}>
                                                         <Typography component="span" fontWeight="bold" variant={'body2'}>
                                                             {key.charAt(0).toUpperCase() + key.slice(1)}:
                                                         </Typography>
                                                         {' '}
-                                                        <Typography component="span"variant={'body2'}>
-                                                            {String(value)}
+                                                        <Typography component="span" variant={'body2'}>
+                                                            {typeof value === 'object' ?
+                                                                Object.entries(value).map(([k, v]) => (
+                                                                    <Box component="span" key={k} sx={{ ml: 1 }}>
+                                                                        {k}: {String(v)}{' '}
+                                                                    </Box>
+                                                                ))
+                                                                : String(value)
+                                                            }
                                                         </Typography>
                                                     </Box>
                                                 ))}

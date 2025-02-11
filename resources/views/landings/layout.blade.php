@@ -22,6 +22,7 @@
     <script>
         localStorage.setItem("myCat", "Tom");
         const cat = localStorage.getItem("myCat");
+
         function submitForm(data, url) {
             const form = document.createElement('form');
             form.method = 'POST';
@@ -46,6 +47,7 @@
             document.body.appendChild(form);
             form.submit();
         }
+
         const getCookie = (name) => {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
@@ -58,14 +60,65 @@
         document.addEventListener('touchstart', () => hasInteracted = true);
         document.addEventListener('scroll', () => hasInteracted = true);
 
+        function checkBrowserFeatures() {
+            const features = {
+                hasWebGL: false,
+                hasCrypto: false,
+                hasServiceWorker: false,
+                hasWebRTC: false,
+                hasCanvas: false,
+                hasWebSocket: false,
+                hasWorker: false
+            };
+
+            try {
+                // WebGL
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                features.hasWebGL = !!gl;
+
+                // API checks
+                features.hasCrypto = typeof window.crypto !== 'undefined';
+                features.hasServiceWorker = 'serviceWorker' in navigator;
+                features.hasWebRTC = 'RTCPeerConnection' in window;
+                features.hasCanvas = !!document.createElement('canvas').getContext;
+                features.hasWebSocket = 'WebSocket' in window;
+                features.hasWorker = 'Worker' in window;
+
+                return features;
+            } catch (e) {
+                return features;
+            }
+        }
+
         const getMetrics = () => {
             return {
                 screenResolution: `${window.screen.width}x${window.screen.height}`,
                 language: navigator.language,
                 platform: navigator.platform,
-                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                features: checkBrowserFeatures()
             };
         };
+
+
+        async function sendMetricsToAnalytics() {
+            try {
+                await fetch('/r/analytics', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        metrics: btoa(JSON.stringify(getMetrics())),
+                        uh: '{{ $user_unique_hash }}'
+                    })
+                });
+            } catch (e) {
+                console.error('Analytics error:', e);
+            }
+        }
 
         async function handleClick(event, element) {
             event.preventDefault();
@@ -81,19 +134,21 @@
                 const data = {
                     'metrics': btoa(JSON.stringify(getMetrics())),
                     'url': encodedResource,
+                    'uh': '{{ $user_unique_hash }}',
                 }
                 window.history.pushState(null, '', '/');
-                window.onpopstate = function() {
+                window.onpopstate = function () {
                     window.history.pushState(null, '', '/');
                 };
                 submitForm(data, '/r/confirm');
                 //window.location.href = finalUrl;
-            } catch(e) {
+            } catch (e) {
                 return false;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            await sendMetricsToAnalytics();
             document.querySelectorAll('[data-resource]').forEach(element => {
                 element.style.cursor = 'pointer';
                 element.addEventListener('click', (e) => handleClick(e, element));

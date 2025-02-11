@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Helpers\UniqUserHash;
 use App\Jobs\StoreVisitJob;
+use App\Jobs\UpdateVisitJob;
 use App\Models\Portal;
-use App\Models\VisitUser;
 use App\Services\CheckIp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Jenssegers\Agent\Agent;
 
@@ -101,16 +102,67 @@ class RedirectController extends Controller
             'country_code'        => $checkIp['country_code'],
             'portalId'            => $portal->id,
             'portalPartnerLinkId' => $portal_partner_link_id,
-            'external_url'        => $external_url,
             'tracker'             => $tracker ?? '',
         ];
 
-        StoreVisitJob::dispatch($data);
-
-        if (config('app.debug')) {
-            return response()->json($data);
+        if (!$request->hasCookie('cat')) {
+            StoreVisitJob::dispatch($data);
         }
-        return redirect()->away($external_url);
 
+        return response()
+            ->view('landings.dating.only_button', [
+                'url' => base64_encode($external_url)
+            ])
+            ->cookie('cat', $uniqUserHash, 60, null, null, false, false);
+
+//        if (config('app.debug')) {
+//            return response()->json($data);
+//        }
+//        return redirect()->away($external_url);
+
+    }
+
+    public function confirmRedirect(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'metrics' => 'string',
+            'url'     => 'string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Bad request'], 403);
+        }
+        $data = $validator->validated();
+
+        try {
+            $metrics = json_decode(base64_decode($data['metrics']), true);
+            $external_url = base64_decode($data['url']);
+            $user_unique_hash = $request->cookie('cat');
+            if (!$user_unique_hash || !$external_url || !$metrics) {
+                return response()->json(['error' => 'Bad request'], 403);
+            }
+
+            UpdateVisitJob::dispatch([
+                'uniq_user_hash' => $user_unique_hash,
+                'metrics'        => $metrics,
+                'external_url'   => $external_url,
+            ]);
+
+
+        } catch (\Exception $e) {
+            return false;
+        } finally {
+            return redirect()->away($external_url)
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Referrer-Policy', 'no-referrer')
+                ->header('Expires', '0');
+        }
+    }
+
+    public function showLanding()
+    {
+        return response()
+            ->view('landings.dating.only_button', ['data' => []])
+            ->cookie('cat', '123', 60, null, null, false, false);
     }
 }

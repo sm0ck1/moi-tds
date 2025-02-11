@@ -14,6 +14,7 @@ import {router} from "@inertiajs/react";
 import Box from "@mui/material/Box";
 import {PaginationInterface} from "@/types/pagination";
 import Pagination from '@mui/material/Pagination';
+import Typography from "@mui/material/Typography";
 
 type VisitUsersIndexProps = PageProps<{ visitUsers: PaginationInterface<VisitUser> }>
 
@@ -31,7 +32,7 @@ export default function VisitUsers({visitUsers, pusher}: VisitUsersIndexProps) {
     }, []);
 
     const handlePageChange = (_: React.ChangeEvent<unknown>, page: number) => {
-        router.get(route('visits.index', { page }));
+        router.get(route('visits.index', {page}));
     };
 
     return (
@@ -57,7 +58,10 @@ export default function VisitUsers({visitUsers, pusher}: VisitUsersIndexProps) {
                                 <TableRow
                                     sx={{'&:last-child td, &:last-child th': {border: 0}}}
                                 >
-                                    <TableCell component="th" scope="row">
+                                    <TableCell component="th" scope="row"
+                                               sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                                        {/* Green icon with confirm or not*/}
+                                        {visit.confirm_click === 1 ? '✅' : '❌'}
                                         <a href={"https://ip-api.com/#" + visit.ip_address}
                                            target="_blank"
                                         >{visit.ip_address}</a>
@@ -87,10 +91,25 @@ export default function VisitUsers({visitUsers, pusher}: VisitUsersIndexProps) {
                                                 <b>Partner</b>: {visit.portal_partner_link?.partner.name}
                                             </Box>
                                             <Box>
-                                                <b>Partner Link</b>: {visit.portal_partner_link?.name} {visit.portal_partner_link?.url}
+                                                <b>Partner
+                                                    Link</b>: {visit.portal_partner_link?.name} {visit.portal_partner_link?.url}
                                             </Box>
                                             <Box>
                                                 <b>Redirected to</b>: {visit.external_url}
+                                            </Box>
+                                            <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+                                                <b>Metrics:</b>
+                                                {visit.metrics && Object.entries(visit.metrics).map(([key, value]) => (
+                                                    <Box component="span" key={key} sx={{ mr: 2 }}>
+                                                        <Typography component="span" fontWeight="bold" variant={'body2'}>
+                                                            {key.charAt(0).toUpperCase() + key.slice(1)}:
+                                                        </Typography>
+                                                        {' '}
+                                                        <Typography component="span"variant={'body2'}>
+                                                            {String(value)}
+                                                        </Typography>
+                                                    </Box>
+                                                ))}
                                             </Box>
                                         </Box>
                                     </TableCell>
@@ -100,7 +119,7 @@ export default function VisitUsers({visitUsers, pusher}: VisitUsersIndexProps) {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Paper sx={{ display: 'flex', justifyContent: 'center', mt: 2, p: 2 }}>
+            <Paper sx={{display: 'flex', justifyContent: 'center', mt: 2, p: 2}}>
                 <Pagination
                     count={visitUsers.last_page}
                     page={visitUsers.current_page}

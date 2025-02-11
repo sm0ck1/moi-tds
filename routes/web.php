@@ -11,6 +11,7 @@ use App\Http\Controllers\VisitUsers\VisitUsersController;
 use Illuminate\Support\Facades\Route;
 
 Route::withoutMiddleware(['web'])->get('r/{short_url}', [RedirectController::class, 'redirect']);
+Route::withoutMiddleware(['web'])->post('r/confirm', [RedirectController::class, 'confirmRedirect']);
 
 Route::middleware(['auth', 'admin'])->prefix('dashboard')->group(function () {
 

@@ -11,6 +11,8 @@ export declare interface VisitUser {
     device_type: string;
     visit_count: string;
     external_url: string;
+    confirm_click: number;
+    metrics: any;
     portal_partner_link_link_id: number;
     portal_partner_link: PartnerLink;
     portal_id: number;

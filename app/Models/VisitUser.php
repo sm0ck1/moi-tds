@@ -20,6 +20,8 @@ class VisitUser extends Model
         'country_code',
         'device_type',
         'visit_count',
+        'metrics',
+        'confirm_click',
 
         'portal_partner_link_id',
         'portal_id',
@@ -30,6 +32,7 @@ class VisitUser extends Model
         'visit_date' => 'datetime:d.m.Y H:i:s',
         'created_at' => 'datetime:d.m.Y H:i:s',
         'updated_at' => 'datetime:d.m.Y H:i:s',
+        'metrics' => 'array',
     ];
 
     protected $appends = [

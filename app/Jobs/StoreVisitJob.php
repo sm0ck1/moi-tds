@@ -23,7 +23,7 @@ class StoreVisitJob implements ShouldQueue
         $this->data = $data;
     }
 
-    public function handle()
+    public function handle(): void
     {
 
         $validator = Validator::make($this->data, [
@@ -34,12 +34,12 @@ class StoreVisitJob implements ShouldQueue
         ]);
         if ($validator->fails()) {
             Log::error('StoreVisitJob validation failed', $validator->errors()->toArray());
-            return false;
+            return;
         }
 
         if (VisitUser::where('uniq_user_hash', $this->data['uniq_user_hash'])->exists()) {
             VisitUser::where('uniq_user_hash', $this->data['uniq_user_hash'])->increment('visit_count');
-            return response()->json(['success' => 'add visit count']);
+            return;
         }
 
         VisitUser::create([
@@ -52,10 +52,11 @@ class StoreVisitJob implements ShouldQueue
             'portal_id'              => $this->data['portalId'],
             'portal_partner_link_id' => $this->data['portalPartnerLinkId'],
             'uniq_user_hash'         => $this->data['uniq_user_hash'],
-            'external_url'           => $this->data['external_url'],
+            'external_url'           => $this->data['external_url'] ?? '',
             'tracker'           => $this->data['tracker'],
         ]);
 
         event(new VisitUserEvent('User visited portal.'));
+
     }
 }

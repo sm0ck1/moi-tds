@@ -12,7 +12,7 @@ return [
                 'cluster' => env('VITE_PUSHER_APP_CLUSTER', 'eu'),
                 'useTLS'  => true,
                 'timeout' => 30,
-                'persistent' => true,
+                'persistent' => false,
                 'encrypted' => true,
             ],
         ],

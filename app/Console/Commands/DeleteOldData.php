@@ -29,7 +29,7 @@ class DeleteOldData extends Command
         DB::table('visit_users')
             ->where('confirm_click', 0)
             ->whereNull('metrics')
-            ->where('created_at', '<', now()->subDay())
+            ->where('created_at', '<', now()->subHour())
             ->delete();
     }
 }

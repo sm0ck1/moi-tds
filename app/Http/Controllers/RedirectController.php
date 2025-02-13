@@ -29,7 +29,7 @@ class RedirectController extends Controller
             return response()->json(['error' => 'Bad request'], 403);
         }
 
-        if (Str::contains($userAgent, ['bot', 'spider', 'crawler', 'curl', 'fetch', 'wget', 'slurp', 'python', 'go-http-client', 'client', 'checker'])) {
+        if (Str::contains(strtolower($userAgent), ['bot', 'spider', 'crawler', 'curl', 'fetch', 'wget', 'slurp', 'python', 'go-http-client', 'client', 'checker', 'google'])) {
             return response()->json(['error' => 'Permission denied'], 403);
         }
 

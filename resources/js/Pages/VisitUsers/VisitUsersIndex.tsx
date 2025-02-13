@@ -22,6 +22,7 @@ export default function VisitUsers({visitUsers, pusher}: VisitUsersIndexProps) {
     const pusherService = new PusherService(pusher.key)
     useEffect(() => {
         pusherService.subscribe(PusherChannels.visitUser, PusherEvents.newVisit, (data: any) => {
+            pusherService.unsubscribe(PusherChannels.visitUser, PusherEvents.newVisit);
             router.reload();
         });
 

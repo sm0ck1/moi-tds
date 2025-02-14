@@ -53,7 +53,8 @@ class StoreVisitJob implements ShouldQueue
             'portal_partner_link_id' => $this->data['portalPartnerLinkId'],
             'uniq_user_hash'         => $this->data['uniq_user_hash'],
             'external_url'           => $this->data['external_url'] ?? '',
-            'tracker'           => $this->data['tracker'],
+            'tracker'                => $this->data['tracker'],
+            'metrics'                => $this->data['metrics'],
         ]);
 
         event(new VisitUserEvent('User visited portal.'));

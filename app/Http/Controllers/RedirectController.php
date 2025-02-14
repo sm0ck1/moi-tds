@@ -187,7 +187,7 @@ class RedirectController extends Controller
             if (!$decrypt) {
                 return response()->json(['error' => 'Bad request'], 403);
             }
-
+            //dd([...$decrypt, 'metrics' => $metrics]);
             StoreVisitJob::dispatch([...$decrypt, 'metrics' => $metrics]);
 
         } catch (\Exception $e) {

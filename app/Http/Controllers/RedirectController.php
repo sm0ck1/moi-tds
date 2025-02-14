@@ -166,6 +166,7 @@ class RedirectController extends Controller
         $validator = Validator::make($request->all(), [
             'metrics' => 'string',
             'uh'      => 'string',
+            'fd'      => 'string',
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => 'Bad request'], 403);
@@ -190,7 +191,7 @@ class RedirectController extends Controller
             StoreVisitJob::dispatch([...$decrypt, 'metrics' => $metrics]);
 
         } catch (\Exception $e) {
-            return false;
+            return $e->getMessage();
         }
     }
 

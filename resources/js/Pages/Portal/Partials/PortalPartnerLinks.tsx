@@ -13,6 +13,7 @@ import {
 } from '@dnd-kit/core';
 import {arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from '@dnd-kit/sortable';
 import SortableFlow from "@/Pages/Portal/Partials/SortableFlow";
+import {CountriesDict} from "@/types/country";
 
 
 interface PortalPartnerLinkFormData {
@@ -20,10 +21,11 @@ interface PortalPartnerLinkFormData {
     portal_partner_links: PortalPartnerLink[];
 }
 
-export default function PortalPartnerLinks({portalId, portalPartnerLinks, partnerLinks}: {
+export default function PortalPartnerLinks({portalId, portalPartnerLinks, partnerLinks, countries}: {
     portalId: number,
     portalPartnerLinks: PortalPartnerLink[],
     partnerLinks: PartnerLink[],
+    countries: CountriesDict
 }) {
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -190,6 +192,7 @@ export default function PortalPartnerLinks({portalId, portalPartnerLinks, partne
                             }}
                             partnerLinks={partnerLinks}
                             toggleCondition={toggleCondition}
+                            countries={countries}
                         />
                     ))}
                 </SortableContext>

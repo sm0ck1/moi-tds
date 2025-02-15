@@ -25,8 +25,7 @@
         function showLoader(element) {
             if (element.querySelector('.universal-loader')) return;
 
-            const originalContent = element.innerHTML;
-            element.dataset.originalContent = originalContent;
+            element.dataset.originalContent = element.innerHTML;
 
             element.innerHTML = `
                 <div class="universal-loader inline-flex items-center">

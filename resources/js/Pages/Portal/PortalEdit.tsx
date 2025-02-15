@@ -11,8 +11,9 @@ import {Topic} from "@/types/topic";
 import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import PortalPartnerLinks from "@/Pages/Portal/Partials/PortalPartnerLinks";
+import {CountriesDict} from "@/types/country";
 
-export default function PortalEdit({portal, topics, partnerLinks}: PageProps<{ portal: Portal, topics: Topic[], partnerLinks: PartnerLink[] }>) {
+export default function PortalEdit({portal, topics, partnerLinks, countries}: PageProps<{ portal: Portal, topics: Topic[], partnerLinks: PartnerLink[], countries: CountriesDict }>) {
 
     const {data, setData, patch, processing, errors} = useForm({
         name: "",
@@ -59,6 +60,7 @@ export default function PortalEdit({portal, topics, partnerLinks}: PageProps<{ p
                         </Typography>
                     </Paper>
                     <PortalPartnerLinks
+                        countries={countries}
                         portalId={portal.id}
                         partnerLinks={partnerLinks}
                         portalPartnerLinks={portal.portal_partner_links || []}

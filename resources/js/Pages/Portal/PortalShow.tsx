@@ -6,12 +6,12 @@ import {Portal} from "@/types/portal";
 import {PageProps} from "@/types";
 import Box from "@mui/material/Box";
 import PortalPartnerLinks from "@/Pages/Portal/Partials/PortalPartnerLinks";
+import {CountriesDict} from "@/types/country";
 
 export default function PortalShow(
-    {portal, partnerLinks}:
-    PageProps<{ portal: Portal, partnerLinks: PartnerLink[] }>
+    {portal, partnerLinks, countries}:
+    PageProps<{ portal: Portal, partnerLinks: PartnerLink[], countries: CountriesDict }>
 ) {
-    console.log('portal', portal)
     return (
         <DashboardLayout header={{
             title: 'Portal',
@@ -36,6 +36,7 @@ export default function PortalShow(
                         </Typography>
                     </Paper>
                     <PortalPartnerLinks
+                        countries={countries}
                         portalId={portal.id}
                         partnerLinks={partnerLinks}
                         portalPartnerLinks={portal.portal_partner_links || []}

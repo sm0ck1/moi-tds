@@ -11,6 +11,9 @@ import TextInput from "@/Components/ui/TextInput";
 import {CSS} from '@dnd-kit/utilities';
 import React, {Fragment} from "react";
 import _ from "lodash";
+import Tooltip from "@mui/material/Tooltip";
+import SelectCountries from "@/Components/ui/SelectCountries";
+import {CountriesDict} from "@/types/country";
 
 interface SortableFlowProps {
     flow: any;
@@ -23,20 +26,22 @@ interface SortableFlowProps {
     onDeviceValueChange: (value: 'desktop' | 'mobile') => void;
     partnerLinks: any[];
     toggleCondition: (flowIndex: number, type: 'country' | 'device', enabled: boolean) => void;
+    countries: CountriesDict;
 }
 
 export default function SortableFlow({
-                          flow,
-                          flowIndex,
-                          isFallback,
-                          onRemove,
-                          onPartnerLinkChange,
-                          onConditionOperatorChange,
-                          onConditionValuesChange,
-                          onDeviceValueChange,
-                          partnerLinks,
-                          toggleCondition
-                      }: SortableFlowProps) {
+                                         flow,
+                                         flowIndex,
+                                         isFallback,
+                                         onRemove,
+                                         onPartnerLinkChange,
+                                         onConditionOperatorChange,
+                                         onConditionValuesChange,
+                                         onDeviceValueChange,
+                                         partnerLinks,
+                                         toggleCondition,
+                                         countries
+                                     }: SortableFlowProps) {
 
     const {
         attributes,
@@ -54,7 +59,6 @@ export default function SortableFlow({
         transform: CSS.Transform.toString(transform),
         transition,
     } : undefined;
-
     return (
         <Paper
             style={style}
@@ -80,13 +84,13 @@ export default function SortableFlow({
             }}>
                 {!isFallback && (
                     <div {...attributes} {...listeners}>
-                        <DragIndicatorIcon />
+                        <DragIndicatorIcon/>
                     </div>
                 )}
-                <Typography variant="h6" sx={{ flex: 1 }}>
+                <Typography variant="h6" sx={{flex: 1}}>
                     {isFallback ? 'Fallback Flow' : `Flow ${flowIndex + 1}`}
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
                     <Select
                         value={flow.partner_link_id}
                         onChange={onPartnerLinkChange}
@@ -102,11 +106,18 @@ export default function SortableFlow({
                                     key={partnerLink.id}
                                     value={partnerLink.id}
                                 >
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', pl: 2 }}>
-                                        <Box>
-                                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                    <Box sx={{display: 'flex', flexDirection: 'column', pl: 2,}}>
+                                        <Box sx={{display: 'flex', gap: 1, alignItems: 'center'}}>
+                                            <Typography variant="body2" sx={{fontWeight: 500}}>
                                                 {partnerLink.topic.name}: {partnerLink.name}
                                             </Typography>
+                                            <Box sx={{display: 'flex', gap: 1}}>
+                                                {partnerLink.countries.map((country) => (
+                                                    <Tooltip key={country.code} title={country.name}>
+                                                        {country.flag}
+                                                    </Tooltip>
+                                                ))}
+                                            </Box>
                                         </Box>
                                         <Box>
                                             <Typography variant="caption" color="text.secondary">
@@ -120,15 +131,15 @@ export default function SortableFlow({
                     </Select>
                     {!isFallback && (
                         <IconButton onClick={onRemove}>
-                            <DeleteIcon />
+                            <DeleteIcon/>
                         </IconButton>
                     )}
                 </Box>
             </Box>
 
             {!isFallback && (
-                <Box sx={{ width: '100%' }}>
-                    <Box sx={{ display: 'flex', gap: 2, py: 1 }}>
+                <Box sx={{width: '100%'}}>
+                    <Box sx={{display: 'flex', gap: 2, py: 1}}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -137,7 +148,7 @@ export default function SortableFlow({
                                 />
                             }
                             label="Countries"
-                            sx={{ width: '100px' }}
+                            sx={{width: '100px'}}
                         />
                         {flow.conditions.country && (
                             <>
@@ -145,21 +156,22 @@ export default function SortableFlow({
                                     size={'small'}
                                     value={flow.conditions.country.operator}
                                     onChange={(e) => onConditionOperatorChange(e.target.value as 'in' | 'not')}
-                                    sx={{ width: '230px' }}
+                                    sx={{width: '230px'}}
                                 >
                                     <MenuItem value='in'>IN</MenuItem>
                                     <MenuItem value='not'>NOT</MenuItem>
                                 </Select>
-                                <TextInput
-                                    value={flow.conditions.country.values.join(', ')}
-                                    onChange={(e) => onConditionValuesChange(e.target.value.split(',').map(v => v.trim()))}
-                                    fullWidth
+                                <SelectCountries
+                                    required
+                                    countries={countries}
+                                    defaultValue={flow.conditions.country.values}
+                                    onChangeSelect={(value: string[]) => onConditionValuesChange(value)}
                                 />
                             </>
                         )}
                     </Box>
-                    <Divider />
-                    <Box sx={{ display: 'flex', gap: 2, py: 1 }}>
+                    <Divider/>
+                    <Box sx={{display: 'flex', gap: 2, py: 1}}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -168,14 +180,14 @@ export default function SortableFlow({
                                 />
                             }
                             label="Device"
-                            sx={{ width: '100px' }}
+                            sx={{width: '100px'}}
                         />
                         {flow.conditions.device && (
                             <Select
                                 size={'small'}
                                 value={flow.conditions.device.value}
                                 onChange={(e) => onDeviceValueChange(e.target.value as 'desktop' | 'mobile')}
-                                sx={{ width: '150px' }}
+                                sx={{width: '150px'}}
                             >
                                 <MenuItem value='desktop'>Desktop</MenuItem>
                                 <MenuItem value='mobile'>Mobile</MenuItem>

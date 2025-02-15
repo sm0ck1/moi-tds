@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 class Country
 {
     public const COUNTRIES = [
+            'ALL' => ['name' => 'All countries', 'flag' => '🌍'],
             'AF' => ['name' => 'Afghanistan', 'flag' => '🇦🇫'],
             'AL' => ['name' => 'Albania', 'flag' => '🇦🇱'],
             'DZ' => ['name' => 'Algeria', 'flag' => '🇩🇿'],

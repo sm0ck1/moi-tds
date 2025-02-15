@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Partner;
 
+use App\Helpers\Country;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PartnerRequest;
 use App\Models\Partner;
@@ -39,11 +40,13 @@ class PartnerController extends Controller
 
     public function edit(Partner $partner)
     {
+        $countries = (new Country())->getAllCountries();
         $partner->load(['partnerLinks', 'partnerLinks.topic']);
         $topics = Topic::all();
         return Inertia::render('Partner/PartnerEdit', [
             'partner' => $partner,
-            'topics' => $topics
+            'topics' => $topics,
+            'countries' => $countries
         ]);
     }
 

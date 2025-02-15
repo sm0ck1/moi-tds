@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Portal;
 
+use App\Helpers\Country;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PortalRequest;
 use App\Models\PartnerLink;
@@ -40,8 +41,10 @@ class PortalController extends Controller
     public function create()
     {
         $topics = Topic::all();
+        $countries = (new Country())->getAllCountries();
         return Inertia::render('Portal/PortalCreate', [
-            'topics' => $topics
+            'topics' => $topics,
+            'countries' => $countries
         ]);
     }
 
@@ -54,6 +57,7 @@ class PortalController extends Controller
     public function edit(Portal $portal)
     {
         $topics = Topic::all();
+        $countries = (new Country())->getAllCountries();
         $portal->load(['portalPartnerLinks' => function ($query) {
             $query->orderBy('priority');
         }]);
@@ -61,7 +65,8 @@ class PortalController extends Controller
         return Inertia::render('Portal/PortalEdit', [
             'portal' => $portal,
             'topics' => $topics,
-            'partnerLinks' => $partnerLinks
+            'partnerLinks' => $partnerLinks,
+            'countries' => $countries
         ]);
     }
 

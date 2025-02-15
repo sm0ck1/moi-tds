@@ -24,6 +24,7 @@ class PartnerLinkRequest extends FormRequest
         return [
             'partner_id' => ['required', 'exists:partners,id'],
             'topic_id' => ['required', 'exists:topics,id'],
+            'country_code' => ['required', 'array'],
             'url' => ['required'],
             'name' => ['required', 'string'],
             'helper_text' => ['nullable', 'string'],

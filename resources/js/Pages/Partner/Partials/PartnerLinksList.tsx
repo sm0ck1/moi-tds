@@ -7,15 +7,21 @@ import {useForm} from "@inertiajs/react";
 import React, {useEffect, useState} from "react";
 import {Topic} from "@/types/topic";
 import Typography from "@mui/material/Typography";
+import SelectCountries from "@/Components/ui/SelectCountries";
+import {CountriesDict} from "@/types/country";
+import InsertLinkIcon from '@mui/icons-material/InsertLink';
+import Tooltip from "@mui/material/Tooltip";
 
-export default function PartnerLinksList({partnerLinks, topics}: {
+export default function PartnerLinksList({partnerLinks, topics, countries}: {
     partnerLinks: PartnerLink[],
     topics: Topic[],
+    countries: CountriesDict
 }) {
     const [editMode, setEditMode] = useState(0);
     const {data, setData, patch, processing, errors, wasSuccessful, reset} = useForm({
         name: "",
         url: "",
+        country_code: [] as string[],
         topic_id: 0,
         helper_text: "",
         partner_id: 0,
@@ -40,6 +46,7 @@ export default function PartnerLinksList({partnerLinks, topics}: {
                                         setEditMode(link.id)
                                         setData('name', link.name)
                                         setData('url', link.url)
+                                        setData('country_code', link.country_code)
                                         setData('helper_text', link.helper_text)
                                         setData('partner_id', link.partner_id)
                                         setData('topic_id', link.topic_id)
@@ -47,102 +54,120 @@ export default function PartnerLinksList({partnerLinks, topics}: {
                                 )}
                                 <Typography variant={'h6'}>{link.topic.name}</Typography>
                                 <Typography variant={'body1'}>{link.name}</Typography>
+                                <Tooltip title={link.url}>
+                                    <InsertLinkIcon/>
+                                </Tooltip>
                             </Box>
-                            <Typography variant={'body2'}>{link.url}</Typography>
+                            <Box sx={{display: 'flex', gap: 1}}>
+
+                                {link.country_code.map(countryCode => {
+                                    return (<Box
+                                        component={'span'}>{countries[countryCode].flag + ' ' + countries[countryCode].name}</Box>)
+                                })}
+                            </Box>
                         </Box>
                     </Paper>
-                    {editMode === link.id && (<Paper sx={{padding: 2, display: 'flex', flexDirection: 'column', gap: 2}}>
-                        <TextField
-                            fullWidth
-                            size={'small'}
-                            label="Name"
-                            value={editMode === link.id ? data.name : link.name}
-                            disabled={editMode !== link.id}
-                            error={editMode === link.id && !!errors.name}
-                            helperText={editMode === link.id && errors.name}
-                            onChange={e => setData('name', e.target.value)}
-                        />
-                        {topics && (
-                            <FormControl fullWidth variant={'outlined'}>
-                                <InputLabel id={"topic-list-" + link.id}>Topic</InputLabel>
+                    {editMode === link.id && (
+                        <Paper sx={{padding: 2, display: 'flex', flexDirection: 'column', gap: 2}}>
+                            <TextField
+                                fullWidth
+                                size={'small'}
+                                label="Name"
+                                value={editMode === link.id ? data.name : link.name}
+                                disabled={editMode !== link.id}
+                                error={editMode === link.id && !!errors.name}
+                                helperText={editMode === link.id && errors.name}
+                                onChange={e => setData('name', e.target.value)}
+                            />
+                            {topics && (
+                                <FormControl fullWidth variant={'outlined'}>
+                                    <InputLabel id={"topic-list-" + link.id}>Topic</InputLabel>
 
-                                <Select
-                                    labelId={"topic-list-" + link.id}
-                                    label={'Topic'}
-                                    fullWidth
-                                    required
-                                    value={editMode === link.id ? data.topic_id : link.topic_id}
-                                    disabled={editMode !== link.id}
-                                    size={'small'}
-                                    error={editMode === link.id && !!errors.topic_id}
-                                    onChange={e => setData('topic_id', e.target.value as number)}
-                                >
-                                    <MenuItem value={0}>
-                                        <em>You need to choose</em>
-                                    </MenuItem>
-                                    {topics.map(topic => (
-                                        <MenuItem key={'topic' + topic.id} value={topic.id}>
-                                            {topic.name}
+                                    <Select
+                                        labelId={"topic-list-" + link.id}
+                                        label={'Topic'}
+                                        fullWidth
+                                        required
+                                        value={editMode === link.id ? data.topic_id : link.topic_id}
+                                        disabled={editMode !== link.id}
+                                        size={'small'}
+                                        error={editMode === link.id && !!errors.topic_id}
+                                        onChange={e => setData('topic_id', e.target.value as number)}
+                                    >
+                                        <MenuItem value={0}>
+                                            <em>You need to choose</em>
                                         </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        )}
-                        <TextField
-                            fullWidth
-                            size={'small'}
-                            label="URL"
-                            value={editMode === link.id ? data.url : link.url}
-                            error={editMode === link.id && !!errors.url}
-                            helperText={editMode === link.id && errors.url}
-                            disabled={editMode !== link.id}
-                            onChange={e => setData('url', e.target.value)}
-                        />
-                        <TextField
-                            fullWidth
-                            size={'small'}
-                            label="Helper Text"
-                            value={editMode === link.id ? data.helper_text : link.helper_text}
-                            disabled={editMode !== link.id}
-                            error={editMode === link.id && !!errors.helper_text}
-                            helperText={editMode === link.id && errors.helper_text}
-                            onChange={e => setData('helper_text', e.target.value)}
-                        />
-                        <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: 2}}>
-                            {editMode === link.id && (
-                                <>
-                                    <Button variant='contained' size='small' onClick={() => {
-                                        patch(route('partner-links.update', link.id))
-
-                                    }}
-                                            loading={processing}
-                                    >Save</Button>
-                                    <Button variant='contained' size='small' onClick={() => {
-                                        setEditMode(0)
-                                        setData('name', '')
-                                        setData('url', '')
-                                        setData('helper_text', '')
-                                        setData('topic_id', 0)
-                                        setData('partner_id', 0)
-                                    }}>Cancel</Button>
-                                </>
+                                        {topics.map(topic => (
+                                            <MenuItem key={'topic' + topic.id} value={topic.id}>
+                                                {topic.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             )}
-                            {editMode !== link.id && (
-                                <>
-                                    <Button variant='contained' size='small' onClick={() => {
-                                        setEditMode(link.id)
-                                        setData('name', link.name)
-                                        setData('url', link.url)
-                                        setData('helper_text', link.helper_text)
-                                        setData('partner_id', link.partner_id)
-                                        setData('topic_id', link.topic_id)
-                                    }}>Edit</Button>
-                                    <Button variant='contained' size='small'>Delete</Button>
-                                </>
-                            )}
+                            <SelectCountries
+                                countries={countries}
+                                required
+                                defaultValue={editMode === link.id ? data.country_code : link.country_code}
+                                disabled={editMode !== link.id}
+                                onChangeSelect={(value: string[]) => setData('country_code', value)}
+                                error={!!errors.country_code}
+                            />
+                            <TextField
+                                fullWidth
+                                size={'small'}
+                                label="URL"
+                                value={editMode === link.id ? data.url : link.url}
+                                error={editMode === link.id && !!errors.url}
+                                helperText={editMode === link.id && errors.url}
+                                disabled={editMode !== link.id}
+                                onChange={e => setData('url', e.target.value)}
+                            />
+                            <TextField
+                                fullWidth
+                                size={'small'}
+                                label="Helper Text"
+                                value={editMode === link.id ? data.helper_text : link.helper_text}
+                                disabled={editMode !== link.id}
+                                error={editMode === link.id && !!errors.helper_text}
+                                helperText={editMode === link.id && errors.helper_text}
+                                onChange={e => setData('helper_text', e.target.value)}
+                            />
+                            <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: 2}}>
+                                {editMode === link.id && (
+                                    <>
+                                        <Button variant='contained' size='small' onClick={() => {
+                                            patch(route('partner-links.update', link.id))
 
-                        </Box>
-                    </Paper>)}
+                                        }}
+                                                loading={processing}
+                                        >Save</Button>
+                                        <Button variant='contained' size='small' onClick={() => {
+                                            setEditMode(0)
+                                            setData('name', '')
+                                            setData('url', '')
+                                            setData('helper_text', '')
+                                            setData('topic_id', 0)
+                                            setData('partner_id', 0)
+                                        }}>Cancel</Button>
+                                    </>
+                                )}
+                                {editMode !== link.id && (
+                                    <>
+                                        <Button variant='contained' size='small' onClick={() => {
+                                            setEditMode(link.id)
+                                            setData('name', link.name)
+                                            setData('url', link.url)
+                                            setData('helper_text', link.helper_text)
+                                            setData('partner_id', link.partner_id)
+                                            setData('topic_id', link.topic_id)
+                                        }}>Edit</Button>
+                                        <Button variant='contained' size='small'>Delete</Button>
+                                    </>
+                                )}
+
+                            </Box>
+                        </Paper>)}
                 </Grid>
             ))}
         </Grid>

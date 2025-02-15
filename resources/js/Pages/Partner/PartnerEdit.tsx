@@ -11,10 +11,12 @@ import Typography from "@mui/material/Typography";
 import PartnerLinksCreate from "@/Pages/Partner/Partials/PartnerLinksCreate";
 import Box from "@mui/material/Box";
 import {Topic} from "@/types/topic";
+import {CountriesDict} from "@/types/country";
 
-export default function PartnerEdit({partner, topics}: {
+export default function PartnerEdit({partner, topics, countries}: {
     partner: Partner,
     topics: Topic[],
+    countries: CountriesDict,
 }) {
 
     const {data, setData, patch, processing, errors} = useForm({
@@ -141,11 +143,12 @@ export default function PartnerEdit({partner, topics}: {
                         flexDirection: 'column',
                     }}>
                         <Typography variant='h6'>Partner links</Typography>
-                        <PartnerLinksCreate topics={topics} partner={partner}/>
+                        <PartnerLinksCreate topics={topics} partner={partner} countries={countries}/>
                         {partner.partner_links && partner.partner_links.length > 0 &&
                             <PartnerLinksList
                                 partnerLinks={partner.partner_links}
                                 topics={topics}
+                                countries={countries}
                             />
                         }
                     </Box>

@@ -5,14 +5,16 @@ import Button from "@mui/material/Button";
 import {Topic} from "@/types/topic";
 import React, {useEffect} from "react";
 import {Partner} from "@/types/partner";
-import AppBar from "@mui/material/AppBar";
+import {CountriesDict} from "@/types/country";
+import SelectCountries from "@/Components/ui/SelectCountries";
 
-export default function PartnerLinksCreate({partner, topics}: { partner: Partner, topics: Topic[] }) {
+export default function PartnerLinksCreate({partner, topics, countries}: { partner: Partner, topics: Topic[], countries: CountriesDict }) {
 
     const {data, setData, post, processing, errors, hasErrors, wasSuccessful, reset} = useForm({
         name: "",
         url: "",
         helper_text: "",
+        country_code: [] as string[],
         partner_id: 0,
         topic_id: 0,
     });
@@ -70,6 +72,13 @@ export default function PartnerLinksCreate({partner, topics}: { partner: Partner
                     </Select>
                 </FormControl>
             )}
+            <SelectCountries
+                required
+                countries={countries}
+                defaultValue={data.country_code}
+                onChangeSelect={(value: string[]) => setData('country_code', value)}
+                error={!!errors.country_code}
+            />
             <FormControl fullWidth variant={'outlined'}>
                 <TextField
                     fullWidth

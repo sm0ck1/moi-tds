@@ -51,7 +51,11 @@ export default function Navigator(props: DrawerProps) {
                     active: route().current('portal.*'),
                     link: route('portal.index'),
                 },
-
+                { id: 'Placements',
+                    icon: <DatasetLinkedIcon />,
+                    active: route().current('portal-placements.*'),
+                    link: route('portal-placements.index'),
+                },
             ],
         },
         {

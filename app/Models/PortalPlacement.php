@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PortalPlacement extends Model
 {
 
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = ['portal_id', 'external_url'];
 

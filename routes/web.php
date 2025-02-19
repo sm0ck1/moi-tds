@@ -5,6 +5,7 @@ use App\Http\Controllers\Partner\PartnerController;
 use App\Http\Controllers\Partner\PartnerLinksController;
 use App\Http\Controllers\Portal\PortalController;
 use App\Http\Controllers\Portal\PortalPartnerLinksController;
+use App\Http\Controllers\Portal\PortalPlacementController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\Topic\TopicController;
 use App\Http\Controllers\VisitUsers\VisitUsersController;
@@ -23,6 +24,9 @@ Route::middleware(['auth', 'admin'])->prefix('dashboard')->group(function () {
     Route::resource('domain', DomainController::class);
     Route::resource('partner-links', PartnerLinksController::class);
     Route::get('visits', [VisitUsersController::class, 'getVisits'])->name('visits.index');
+
+    Route::resource('portal-placements',PortalPlacementController::class);
+
     Route::post('portal-partner-links', [PortalPartnerLinksController::class, 'storePortalPartnerLinks'])->name('portal-partner-links.store');
 
 //    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Encryptor;
 use App\Helpers\UniqUserHash;
-use App\Jobs\CheckVisitJob;
 use App\Jobs\StoreVisitJob;
 use App\Jobs\UpdateVisitJob;
 use App\Models\Portal;

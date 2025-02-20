@@ -5,7 +5,7 @@ import Paper from "@mui/material/Paper";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
-import React, {Fragment, useEffect} from "react";
+import React, {Fragment, useEffect, useState} from "react";
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -18,12 +18,21 @@ import Typography from "@mui/material/Typography";
 
 type VisitUsersIndexProps = PageProps<{ visitUsers: PaginationInterface<VisitUser> }>
 
-export default function VisitUsers({visitUsers, pusher}: VisitUsersIndexProps) {
+export default function VisitUsers({visitUsers: initialVisitUsers, pusher}: VisitUsersIndexProps) {
+
+    const [visitUsers, setVisitUsers] = useState(initialVisitUsers);
+
     const pusherService = new PusherService(pusher.key)
     useEffect(() => {
         pusherService.subscribe(PusherChannels.visitUser, PusherEvents.newVisit, (data: any) => {
-            pusherService.unsubscribe(PusherChannels.visitUser, PusherEvents.newVisit);
-            router.reload();
+            router.visit(route('visits.index'), {
+                preserveState: true,
+                preserveScroll: true,
+                only: ['visitUsers'], // Запрашиваем только часть данных
+                onSuccess: (page) => {
+                    setVisitUsers(page.props.visitUsers as PaginationInterface<VisitUser>);
+                },
+            });
         });
 
         return () => {

@@ -6,14 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\PortalPlacement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
 {
     public function getPortalPlacements(Request $request)
     {
-        $request->validate([
+        $validated = Validator::make($request->all(), [
             'limit' => ['required', 'integer', 'min:1', 'max:100'],
         ]);
+        if($validated->fails()) {
+            return response()->json(['message' => 'Invalid request.'], 400);
+        }
 
         $links = collect();
 
@@ -44,11 +48,14 @@ class ApiController extends Controller
 
     public function setSuccessPing(Request $request)
     {
-        $request->validate([
+        $validated = Validator::make($request->all(), [
             'token' => ['required', 'string'],
             'links' => ['required', 'array'],
             'links.*' => ['required', 'url'],
         ]);
+        if($validated->fails()) {
+            return response()->json(['message' => 'Invalid request.'], 400);
+        }
         if($request->token !== env('API_TOKEN')) {
             return response()->json(['message' => 'Invalid token.'], 403);
         }

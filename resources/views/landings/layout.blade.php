@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Simple Landing Page</title>
+    <title>Guard</title>
     <meta name="description" content="Simple Landing Page"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -109,6 +109,12 @@
         }
 
         async function sendMetricsToAnalytics() {
+
+            if (!metrics.features.hasWebGL || !isValidUserAgent(ua) || metrics.timeZone === 'UTC') {
+                window.location.href = 'https://www.google.com';
+                return false;
+            }
+
             try {
                 const response = await fetch('/r/analytics', {
                     method: 'POST',
@@ -144,12 +150,6 @@
             try {
 
                 const metrics = getMetrics();
-                const ua = navigator.userAgent;
-
-                if (!metrics.features.hasWebGL || !isValidUserAgent(ua)) {
-                    window.location.href = 'https://www.google.com';
-                    return false;
-                }
 
                 const timeOnPage = Date.now() - pageLoadTime;
                 if (!hasInteracted || timeOnPage < 1000) {

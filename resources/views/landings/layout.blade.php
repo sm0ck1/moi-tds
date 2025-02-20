@@ -108,14 +108,14 @@
             return true;
         }
 
-        async function sendMetricsToAnalytics() {
+        async function sendMetricsToAnalytics(metrics) {
 
+            const ua = navigator.userAgent;
             if (!metrics.features.hasWebGL || !isValidUserAgent(ua) || metrics.timeZone === 'UTC') {
                 window.location.href = 'https://www.google.com';
                 return false;
             }
 
-            try {
                 const response = await fetch('/r/analytics', {
                     method: 'POST',
                     headers: {
@@ -123,33 +123,20 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({
-                        metrics: btoa(JSON.stringify(getMetrics())),
+                        metrics: btoa(JSON.stringify(metrics)),
                         uh: '{{ $user_unique_hash }}',
                         fd: '{{ $first_data }}',
                     })
                 });
 
-                // Дожидаемся ответа и парсим его
-                const result = await response.json();
 
-                if (response.ok && result) {
-                    metricsWereSent = true;
-                    return true;
-                }
-                return false;
-            } catch (e) {
-                console.error('Analytics error:', e);
-                return false;
-            }
         }
 
-        async function handleClick(event, element) {
+        async function handleClick(event, element, metrics) {
             event.preventDefault();
             showLoader(element);
 
             try {
-
-                const metrics = getMetrics();
 
                 const timeOnPage = Date.now() - pageLoadTime;
                 if (!hasInteracted || timeOnPage < 1000) {
@@ -205,10 +192,11 @@
         document.addEventListener('scroll', () => hasInteracted = true);
 
         document.addEventListener('DOMContentLoaded', async () => {
-            metricsWereSent = await sendMetricsToAnalytics();
+            const metrics = getMetrics();
+            await sendMetricsToAnalytics(metrics);
             document.querySelectorAll('[data-resource]').forEach(element => {
                 element.style.cursor = 'pointer';
-                element.addEventListener('click', (e) => handleClick(e, element));
+                element.addEventListener('click', (e) => handleClick(e, element, metrics));
             });
         });
     </script>

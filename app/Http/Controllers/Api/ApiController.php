@@ -65,10 +65,6 @@ class ApiController extends Controller
             ->whereIn('external_url', $links)
             ->update(['ping_counter' => 1]);
 
-        if ($updatedRows === 0) {
-            return response()->json(['message' => 'No matching portal placements found.'], 404);
-        }
-
         return response()->json(['message' => 'Success ping.', 'updated' => $updatedRows]);
     }
 }

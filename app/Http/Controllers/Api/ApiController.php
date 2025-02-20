@@ -45,10 +45,13 @@ class ApiController extends Controller
     public function setSuccessPing(Request $request)
     {
         $request->validate([
+            'token' => ['required', 'string'],
             'links' => ['required', 'array'],
             'links.*' => ['required', 'url'],
         ]);
-
+        if($request->token !== env('API_TOKEN')) {
+            return response()->json(['message' => 'Invalid token.'], 403);
+        }
         $links = $request->input('links');
 
         $updatedRows = DB::table('portal_placements')

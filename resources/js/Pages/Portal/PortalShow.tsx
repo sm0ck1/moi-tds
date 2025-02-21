@@ -9,8 +9,8 @@ import PortalPartnerLinks from "@/Pages/Portal/Partials/PortalPartnerLinks";
 import {CountriesDict} from "@/types/country";
 
 export default function PortalShow(
-    {portal, partnerLinks, countries}:
-    PageProps<{ portal: Portal, partnerLinks: PartnerLink[], countries: CountriesDict }>
+    {portal, partnerLinks, countries, landings}:
+    PageProps<{ portal: Portal, partnerLinks: PartnerLink[], countries: CountriesDict, landings: GroupedLandings }>,
 ) {
     return (
         <DashboardLayout header={{
@@ -36,6 +36,7 @@ export default function PortalShow(
                         </Typography>
                     </Paper>
                     <PortalPartnerLinks
+                        landings={landings}
                         countries={countries}
                         portalId={portal.id}
                         partnerLinks={partnerLinks}

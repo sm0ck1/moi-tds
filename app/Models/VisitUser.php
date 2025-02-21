@@ -16,6 +16,7 @@ class VisitUser extends Model
         'referrer',
         'external_url',
         'tracker',
+        'landing',
         'visit_date',
         'country_code',
         'device_type',

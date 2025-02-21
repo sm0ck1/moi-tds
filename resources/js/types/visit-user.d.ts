@@ -4,6 +4,7 @@ export declare interface VisitUser {
     id: number;
     ip_address: string;
     user_agent: string;
+    landing: string;
     tracker: string;
     referrer: string;
     visit_date: string;

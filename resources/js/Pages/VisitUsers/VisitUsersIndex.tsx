@@ -55,6 +55,7 @@ export default function VisitUsers({visitUsers: initialVisitUsers, pusher}: Visi
                     <TableHead>
                         <TableRow>
                             <TableCell>IP Address</TableCell>
+                            <TableCell>Landing</TableCell>
                             <TableCell>Visit count</TableCell>
                             <TableCell>Tracker</TableCell>
                             <TableCell>Portal</TableCell>
@@ -77,6 +78,7 @@ export default function VisitUsers({visitUsers: initialVisitUsers, pusher}: Visi
                                         >{visit.ip_address}</a>
                                     </TableCell>
                                     <TableCell>{visit.visit_count}</TableCell>
+                                    <TableCell>{visit.landing}</TableCell>
                                     <TableCell>{visit.tracker}</TableCell>
                                     <TableCell>{visit.portal.short_url}</TableCell>
                                     <TableCell>{visit.created_at}</TableCell>

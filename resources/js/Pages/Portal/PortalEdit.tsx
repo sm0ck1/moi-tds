@@ -30,7 +30,7 @@ export default function PortalEdit({portal, topics, partnerLinks, countries, lan
         bot_url: "",
         note: "",
         topic_id: topics.length > 0 ? topics[0].id : 0,
-        default_lendings: [] as string[],
+        default_landings: [] as string[],
     })
 
     React.useEffect(() => {
@@ -39,7 +39,7 @@ export default function PortalEdit({portal, topics, partnerLinks, countries, lan
         setData('bot_url', portal.bot_url)
         setData('note', portal.note)
         setData('topic_id', portal.topic_id || 0)
-        setData('default_lendings', portal.default_lendings || [])
+        setData('default_landings', portal.default_landings || [])
     }, [portal])
 
     function submit(e: React.FormEvent) {
@@ -130,8 +130,8 @@ export default function PortalEdit({portal, topics, partnerLinks, countries, lan
                         <SelectLandings
                             required
                             landings={landings}
-                            defaultValue={data.default_lendings || []}
-                            onChangeSelect={(value: string[]) => setData('default_lendings', value)}
+                            defaultValue={data.default_landings || []}
+                            onChangeSelect={(value: string[]) => setData('default_landings', value)}
                         />
                         {topics && (
                             <FormControl fullWidth>

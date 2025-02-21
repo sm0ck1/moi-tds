@@ -17,7 +17,7 @@ class Portal extends Model
         'default_landings',
         'note',
         'topic_id',
-        'default_lendings'
+        'default_landings'
     ];
 
     protected $casts = [

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Encryptor;
+use App\Helpers\ScanViewsFolder;
 use App\Helpers\UniqUserHash;
 use App\Jobs\StoreVisitJob;
 use App\Jobs\UpdateVisitJob;
@@ -33,7 +34,7 @@ class RedirectController extends Controller
             return response()->json(['error' => 'Permission denied'], 403);
         }
 
-        $portal = Portal::select(['id'])->with([
+        $portal = Portal::select(['id', 'default_landings'])->with([
             'portalPartnerLinks'
         ])->where('short_url', $short_url)->firstOrFail();
 
@@ -55,6 +56,7 @@ class RedirectController extends Controller
 
         $external_url = '';
         $portal_partner_link_id = 0;
+        $landings = $portal->default_landings;
         foreach ($portal->portalPartnerLinks->sortBy('priority') as $link) {
             $conditions = $link->conditions;
 
@@ -70,11 +72,25 @@ class RedirectController extends Controller
                 continue;
             }
 
-            $external_url = $link->partnerLink->url;
+            if (isset($conditions['landing'])) {
+                $landings = $conditions['landing']['values'];
+            }
 
+            $external_url = $link->partnerLink->url;
             $portal_partner_link_id = $link->partnerLink->id;
             break;
         }
+        if (!$landings) {
+            return response()->json(['error' => 'Not found'], 404);
+        }
+
+        $landings = collect($landings)->random();
+        if (count(explode('.', $landings)) === 1) {
+            $list = ScanViewsFolder::getLandingsInFolder($landings);
+            $landings = collect($list)->random();
+            $landings = $landings['view'];
+        }
+
 
         $uniqUserHash = (new UniqUserHash(
                 [
@@ -100,6 +116,7 @@ class RedirectController extends Controller
             'userAgent'           => $userAgent,
             'referrer'            => $referrer,
             'visitDate'           => $visitDate,
+            'landing'             => $landings,
             'country_code'        => $checkIp['country_code'],
             'portalId'            => $portal->id,
             'portalPartnerLinkId' => $portal_partner_link_id,
@@ -108,10 +125,11 @@ class RedirectController extends Controller
 
         $encryptor = new Encryptor(env('ENCRYPT_KEY', 'abracadabra'));
         return response()
-            ->view('landings.other.security_page', [
+//            ->view('landings.other.security_page', [
+            ->view($landings, [
                 'url'              => base64_encode($external_url),
                 'user_unique_hash' => $uniqUserHash,
-                'first_data'          => base64_encode($encryptor->encrypt($data)),
+                'first_data'       => base64_encode($encryptor->encrypt($data)),
             ])
             ->cookie('cat', $uniqUserHash, 60, null, null, false, false);
 

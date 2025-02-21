@@ -14,13 +14,16 @@ class Portal extends Model
         'name',
         'short_url',
         'bot_url',
+        'default_landings',
         'note',
         'topic_id',
+        'default_lendings'
     ];
 
     protected $casts = [
         'created_at' => 'datetime:d.m.Y',
         'updated_at' => 'datetime:d.m.Y',
+        'default_landings' => 'array'
     ];
 
     public function topic()

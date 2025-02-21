@@ -5,6 +5,9 @@ interface PortalPartnerLink {
     priority: number;
     is_fallback: boolean;
     conditions: {
+        landings?: {
+            values: string[];
+        }
         country?: {
             operator: 'in' | 'not';
             values: string[];

@@ -16,4 +16,9 @@ class HelperController extends Controller
             'short_url' => $shortUrl->make($length)
         ]);
     }
+
+    public function previewLanding($lending)
+    {
+
+    }
 }

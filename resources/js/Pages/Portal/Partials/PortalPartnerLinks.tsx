@@ -21,11 +21,12 @@ interface PortalPartnerLinkFormData {
     portal_partner_links: PortalPartnerLink[];
 }
 
-export default function PortalPartnerLinks({portalId, portalPartnerLinks, partnerLinks, countries}: {
+export default function PortalPartnerLinks({portalId, portalPartnerLinks, partnerLinks, countries, landings}: {
     portalId: number,
     portalPartnerLinks: PortalPartnerLink[],
     partnerLinks: PartnerLink[],
-    countries: CountriesDict
+    countries: CountriesDict,
+    landings: GroupedLandings,
 }) {
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -114,7 +115,7 @@ export default function PortalPartnerLinks({portalId, portalPartnerLinks, partne
         updateData(newLinks);
     };
 
-    const toggleCondition = (flowIndex: number, type: 'country' | 'device', enabled: boolean) => {
+    const toggleCondition = (flowIndex: number, type: 'country' | 'device' | 'landings', enabled: boolean) => {
         if (flowIndex === data.portal_partner_links.length - 1) return;
 
         const newLinks = [...data.portal_partner_links];
@@ -123,7 +124,9 @@ export default function PortalPartnerLinks({portalId, portalPartnerLinks, partne
                 ...newLinks[flowIndex].conditions,
                 [type]: type === 'country'
                     ? { operator: 'in', values: [] }
-                    : { value: 'desktop' }
+                    : type === 'landings'
+                        ? { values: [] } // Массив landings
+                        : { value: 'desktop' }
             };
         } else {
             const { [type]: _, ...rest } = newLinks[flowIndex].conditions;
@@ -131,6 +134,7 @@ export default function PortalPartnerLinks({portalId, portalPartnerLinks, partne
         }
         updateData(newLinks);
     };
+
 
     const handleSubmit = () => {
         const formData = {...data};
@@ -176,10 +180,10 @@ export default function PortalPartnerLinks({portalId, portalPartnerLinks, partne
                                 }
                                 setData('portal_partner_links', newLinks);
                             }}
-                            onConditionValuesChange={(values) => {
+                            onConditionValuesChange={(type: 'landings' | 'country', values: string[]) => {
                                 const newLinks = [...data.portal_partner_links];
-                                if (newLinks[flowIndex].conditions.country) {
-                                    newLinks[flowIndex].conditions.country.values = values;
+                                if (newLinks[flowIndex].conditions[type]) {
+                                    newLinks[flowIndex].conditions[type].values = values;
                                 }
                                 setData('portal_partner_links', newLinks);
                             }}
@@ -193,6 +197,7 @@ export default function PortalPartnerLinks({portalId, portalPartnerLinks, partne
                             partnerLinks={partnerLinks}
                             toggleCondition={toggleCondition}
                             countries={countries}
+                            landings={landings}
                         />
                     ))}
                 </SortableContext>

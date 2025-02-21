@@ -12,8 +12,17 @@ import {FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import PortalPartnerLinks from "@/Pages/Portal/Partials/PortalPartnerLinks";
 import {CountriesDict} from "@/types/country";
+import SelectLandings from "@/Components/ui/SelectLandings";
 
-export default function PortalEdit({portal, topics, partnerLinks, countries}: PageProps<{ portal: Portal, topics: Topic[], partnerLinks: PartnerLink[], countries: CountriesDict }>) {
+type PortalEditProps = {
+    portal: Portal,
+    topics: Topic[],
+    partnerLinks: PartnerLink[],
+    countries: CountriesDict,
+    landings: GroupedLandings,
+}
+
+export default function PortalEdit({portal, topics, partnerLinks, countries, landings}: PageProps<PortalEditProps>) {
 
     const {data, setData, patch, processing, errors} = useForm({
         name: "",
@@ -21,6 +30,7 @@ export default function PortalEdit({portal, topics, partnerLinks, countries}: Pa
         bot_url: "",
         note: "",
         topic_id: topics.length > 0 ? topics[0].id : 0,
+        default_lendings: [] as string[],
     })
 
     React.useEffect(() => {
@@ -29,6 +39,7 @@ export default function PortalEdit({portal, topics, partnerLinks, countries}: Pa
         setData('bot_url', portal.bot_url)
         setData('note', portal.note)
         setData('topic_id', portal.topic_id || 0)
+        setData('default_lendings', portal.default_lendings || [])
     }, [portal])
 
     function submit(e: React.FormEvent) {
@@ -60,6 +71,7 @@ export default function PortalEdit({portal, topics, partnerLinks, countries}: Pa
                         </Typography>
                     </Paper>
                     <PortalPartnerLinks
+                        landings={landings}
                         countries={countries}
                         portalId={portal.id}
                         partnerLinks={partnerLinks}
@@ -114,6 +126,12 @@ export default function PortalEdit({portal, topics, partnerLinks, countries}: Pa
                             value={data.note}
                             fullWidth
                             textError={errors.note}
+                        />
+                        <SelectLandings
+                            required
+                            landings={landings}
+                            defaultValue={data.default_lendings || []}
+                            onChangeSelect={(value: string[]) => setData('default_lendings', value)}
                         />
                         {topics && (
                             <FormControl fullWidth>

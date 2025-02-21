@@ -47,6 +47,7 @@ class StoreVisitJob implements ShouldQueue
             'user_agent'             => $this->data['userAgent'],
             'referrer'               => $this->data['referrer'],
             'visit_date'             => $this->data['visitDate'],
+            'landing'                => $this->data['landing'],
             'country_code'           => $this->data['country_code'],
             'device_type'            => $this->data['deviceType'],
             'portal_id'              => $this->data['portalId'],

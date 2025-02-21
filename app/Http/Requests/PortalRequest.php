@@ -30,6 +30,7 @@ class PortalRequest extends FormRequest
                 Rule::exists('topics', 'id')
             ],
             'short_url' => ['required'],
+            'default_lendings' => ['required', 'array'],
             'bot_url' => '',
             'note' => '',
         ];

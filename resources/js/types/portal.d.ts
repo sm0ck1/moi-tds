@@ -3,6 +3,7 @@ export interface Portal {
     name: string;
     short_url: string;
     bot_url: string;
+    default_lendings: string[];
     note: string;
     topic_id: number;
     topic?: Topic;

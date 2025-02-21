@@ -14,6 +14,7 @@ import _ from "lodash";
 import Tooltip from "@mui/material/Tooltip";
 import SelectCountries from "@/Components/ui/SelectCountries";
 import {CountriesDict} from "@/types/country";
+import SelectLandings from "@/Components/ui/SelectLandings";
 
 interface SortableFlowProps {
     flow: any;
@@ -22,11 +23,12 @@ interface SortableFlowProps {
     onRemove: () => void;
     onPartnerLinkChange: (e: any) => void;
     onConditionOperatorChange: (value: 'in' | 'not') => void;
-    onConditionValuesChange: (values: string[]) => void;
+    onConditionValuesChange: (type: 'landings' | 'country', values: string[]) => void;
     onDeviceValueChange: (value: 'desktop' | 'mobile') => void;
     partnerLinks: any[];
-    toggleCondition: (flowIndex: number, type: 'country' | 'device', enabled: boolean) => void;
+    toggleCondition: (flowIndex: number, type: 'country' | 'device' | 'landings', enabled: boolean) => void;
     countries: CountriesDict;
+    landings: GroupedLandings;
 }
 
 export default function SortableFlow({
@@ -40,7 +42,8 @@ export default function SortableFlow({
                                          onDeviceValueChange,
                                          partnerLinks,
                                          toggleCondition,
-                                         countries
+                                         countries,
+                                         landings,
                                      }: SortableFlowProps) {
 
     const {
@@ -59,6 +62,7 @@ export default function SortableFlow({
         transform: CSS.Transform.toString(transform),
         transition,
     } : undefined;
+
     return (
         <Paper
             style={style}
@@ -143,6 +147,27 @@ export default function SortableFlow({
                         <FormControlLabel
                             control={
                                 <Checkbox
+                                    checked={!!flow.conditions.landings}
+                                    onChange={(e) => toggleCondition(flowIndex, 'landings', e.target.checked)}
+                                />
+                            }
+                            label="Landings"
+                            sx={{width: '100px'}}
+                        />
+                        {flow.conditions.landings && (
+                            <SelectLandings
+                                required
+                                landings={landings}
+                                defaultValue={flow.conditions.landings?.values || []}
+                                onChangeSelect={(value: string[]) => onConditionValuesChange('landings', value)}
+                            />
+                        )}
+                    </Box>
+                    <Divider/>
+                    <Box sx={{display: 'flex', gap: 2, py: 1}}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
                                     checked={!!flow.conditions.country}
                                     onChange={(e) => toggleCondition(flowIndex, 'country', e.target.checked)}
                                 />
@@ -165,7 +190,7 @@ export default function SortableFlow({
                                     required
                                     countries={countries}
                                     defaultValue={flow.conditions.country.values}
-                                    onChangeSelect={(value: string[]) => onConditionValuesChange(value)}
+                                    onChangeSelect={(value: string[]) => onConditionValuesChange('country', value)}
                                 />
                             </>
                         )}

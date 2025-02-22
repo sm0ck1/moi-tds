@@ -6,51 +6,123 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import Box from "@mui/material/Box";
-import Tooltip from "@mui/material/Tooltip";
-import {Info} from "@mui/icons-material";
 import {PaginationInterface} from "@/types/pagination";
 import {PortalPlacement} from "@/types/portalPlacement";
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import HourglassTopIcon from '@mui/icons-material/HourglassTop';
+import HourglassFullIcon from '@mui/icons-material/HourglassFull';
+import {Card, CardContent, Switch} from "@mui/material";
+import {router} from "@inertiajs/react";
+import React, {useEffect, useState} from "react";
+import Grid from "@mui/material/Grid2";
+import Typography from "@mui/material/Typography";
+import Pagination from "@mui/material/Pagination";
 
 type PortalPlacementsIndexProps = {
     portalPlacements: PaginationInterface<PortalPlacement>;
 }
 
-export default function PortalPlacementIndex({portalPlacements}: PortalPlacementsIndexProps) {
-    return (
-        <TableContainer component={Paper}>
-            <Table sx={{minWidth: 650}} size="small" aria-label="a dense table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>ID</TableCell>
-                        <TableCell>Ping Counter</TableCell>
-                        <TableCell>Portal</TableCell>
-                        <TableCell>LINK</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {portalPlacements && portalPlacements.data.map((row) => (
-                        <TableRow
-                            key={row.id}
-                            sx={{
-                                '&:last-child td, &:last-child th': {border: 0},
+export default function PortalPlacementIndex({portalPlacements, ...counters}: PortalPlacementsIndexProps) {
 
-                            }}
-                        >
-                            <TableCell component="th" scope="row">
-                                {row.id}
-                            </TableCell>
-                            <TableCell>
-                                <Box display="flex" alignItems="center">
-                                    {row.ping_counter}
-                                    {row.updated_at !== row.created_at ? " Last ping: " + row.updated_at : ""}
-                                </Box>
-                            </TableCell>
-                            <TableCell>{row.portal.name}</TableCell>
-                            <TableCell>{row.external_url}</TableCell>
+    const [loading, setLoading] = useState(0);
+
+    async function changeInSearch(id: number, inSearch: boolean) {
+        setLoading(id);
+        try {
+            const response = await fetch(route('api-portal-placements.in_search', id), {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({in_search: inSearch}),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            router.reload({
+                only: ['portalPlacements', 'inSearch'],
+                onSuccess: () => {
+                    setLoading(0);
+                }
+            });
+
+        } catch (error) {
+            console.error('Update failed', error);
+        }
+    }
+    const handlePageChange = (_: React.ChangeEvent<unknown>, page: number) => {
+        router.get(route('portal-placements.index', {page}));
+    };
+    return (
+        <>
+            <TableContainer component={Paper}>
+                <Table sx={{minWidth: 650}} size="small" aria-label="a dense table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Ping was</TableCell>
+                            <TableCell>In search</TableCell>
+                            <TableCell>Portal</TableCell>
+                            <TableCell>LINK</TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                        {portalPlacements && portalPlacements.data.map((row) => (
+                            <TableRow
+                                key={row.id}
+                                sx={{
+                                    '&:last-child td, &:last-child th': {border: 0},
+
+                                }}
+                            >
+                                <TableCell>
+                                    <Box display="flex" alignItems="center">
+                                        {row.ping_counter === 0 && row.get_to_ping === 0 &&
+                                            <HourglassEmptyIcon
+                                                fontSize={'small'}
+                                                color="primary"
+
+                                            />
+                                        }
+                                        {row.ping_counter === 0 && row.get_to_ping === 1 &&
+                                            <HourglassTopIcon fontSize={'small'} color="warning"/>}
+                                        {row.ping_counter === 1 && row.get_to_ping === 1 &&
+                                            <HourglassFullIcon fontSize={'small'} color="success"/>}
+
+                                    </Box>
+                                </TableCell>
+                                <TableCell>
+                                    <Switch
+                                        disabled={loading === row.id}
+                                        checked={row.in_search}
+                                        onChange={async (event) => {
+                                            changeInSearch(row.id, event.target.checked)
+                                        }}
+                                        color="primary"
+                                    />
+                                </TableCell>
+                                <TableCell>{row.portal.name}</TableCell>
+                                <TableCell>
+                                    <a href={"https://www.google.com/search?q=site:" + row.external_url} target="_blank"
+                                       rel="noreferrer noopener">
+                                        {row.external_url}
+                                    </a>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <Paper sx={{display: 'flex', justifyContent: 'center', mt: 2, p: 2}}>
+                <Pagination
+                    count={portalPlacements.last_page}
+                    page={portalPlacements.current_page}
+                    onChange={handlePageChange}
+                    color="primary"
+                />
+            </Paper>
+        </>
     );
 }

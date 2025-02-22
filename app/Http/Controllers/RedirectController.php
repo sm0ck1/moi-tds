@@ -77,7 +77,7 @@ class RedirectController extends Controller
             }
 
             $external_url = $link->partnerLink->url;
-            $portal_partner_link_id = $link->partnerLink->id;
+            $portal_partner_link_id = $link->id;
             break;
         }
         if (!$landings) {
@@ -90,7 +90,6 @@ class RedirectController extends Controller
             $landings = collect($list)->random();
             $landings = $landings['view'];
         }
-
 
         $uniqUserHash = (new UniqUserHash(
                 [

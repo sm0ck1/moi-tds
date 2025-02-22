@@ -11,7 +11,12 @@ class PortalPlacement extends Model
 
     use HasFactory;
 
-    protected $fillable = ['portal_id', 'external_url'];
+    protected $fillable = ['portal_id', 'external_url', 'in_search', 'ping_counter', 'get_to_ping'];
+
+    protected $casts = [
+        'updated_at' => 'date:Y-m-d H:i',
+        'in_search' => 'boolean',
+    ];
 
     public function portal()
     {

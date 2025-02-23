@@ -8,8 +8,9 @@ import React from "react";
 import {useForm} from "@inertiajs/react";
 import {PageProps} from "@/types";
 import {Topic} from "@/types/topic";
+import SelectLandings from "@/Components/ui/SelectLandings";
 
-export default function PortalCreate({topics}: PageProps<{ topics: Topic[] }>) {
+export default function PortalCreate({topics, landings}: PageProps<{ topics: Topic[], landings: GroupedLandings }>) {
 
     const {data, setData, post, processing, errors} = useForm({
         name: "",
@@ -17,6 +18,7 @@ export default function PortalCreate({topics}: PageProps<{ topics: Topic[] }>) {
         bot_url: "",
         note: "",
         topic_id: topics.length > 0 ? topics[0].id : 0,
+        default_landings: [] as string[],
     })
 
     function submit(e: React.FormEvent) {
@@ -82,6 +84,12 @@ export default function PortalCreate({topics}: PageProps<{ topics: Topic[] }>) {
                             {!!errors.short_url &&
                                 <FormHelperText id="errors-short_url">{errors.short_url}</FormHelperText>}
                         </FormControl>
+                        <SelectLandings
+                            required
+                            landings={landings}
+                            defaultValue={data.default_landings || []}
+                            onChangeSelect={(value: string[]) => setData('default_landings', value)}
+                        />
                         <TextInput
                             required
                             id="partner-bot-url"
@@ -92,6 +100,7 @@ export default function PortalCreate({topics}: PageProps<{ topics: Topic[] }>) {
                             fullWidth
                             textError={errors.bot_url}
                         />
+
                         <TextInput
                             required
                             id="partner-note"

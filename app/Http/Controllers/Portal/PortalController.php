@@ -41,10 +41,12 @@ class PortalController extends Controller
     public function create(): \Inertia\Response
     {
         $topics = Topic::all();
+        $landings = ScanViewsFolder::landings();
         $countries = (new Country())->getAllCountries();
         return Inertia::render('Portal/PortalCreate', [
             'topics' => $topics,
-            'countries' => $countries
+            'countries' => $countries,
+            'landings' => $landings
         ]);
     }
 

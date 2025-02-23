@@ -69,12 +69,7 @@ export default function PortalIndex({portals}: PageProps<{ portals: Portal[] }>)
                                     </Box>
                                 </TableCell>
                                 <TableCell>
-                                    <TextInput
-                                        label=""
-                                        value={row.short_url}
-                                        disabled
-                                        size={'small'}
-                                    />
+                                    https://{window.location.hostname}{"/r/" + row.short_url + '?t=something'}
                                 </TableCell>
                                 <TableCell>{row.topic.name}</TableCell>
                                 <TableCell>{row.portal_partner_links_count}</TableCell>

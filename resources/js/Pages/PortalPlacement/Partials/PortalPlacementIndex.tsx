@@ -11,11 +11,9 @@ import {PortalPlacement} from "@/types/portalPlacement";
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import HourglassFullIcon from '@mui/icons-material/HourglassFull';
-import {Card, CardContent, Switch} from "@mui/material";
+import { Switch} from "@mui/material";
 import {router} from "@inertiajs/react";
-import React, {useEffect, useState} from "react";
-import Grid from "@mui/material/Grid2";
-import Typography from "@mui/material/Typography";
+import React, { useState} from "react";
 import Pagination from "@mui/material/Pagination";
 
 type PortalPlacementsIndexProps = {

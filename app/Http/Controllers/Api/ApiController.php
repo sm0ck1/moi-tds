@@ -42,6 +42,20 @@ class ApiController extends Controller
         return response()->json(['links' => $portalPlacements]);
     }
 
+    public function getPortalPlacementsOnlyForId(PortalPlacement $portalPlacement)
+    {
+
+//        if ($portalPlacements->isNotEmpty()) {
+//            $ids = $portalPlacements->pluck('id');
+//            PortalPlacement::query()
+//                ->whereIn('id', $ids)
+//                ->update(['get_to_ping' => 1]);
+//        }
+
+
+        return response()->json($portalPlacement);
+    }
+
     public function setSuccessPing(Request $request)
     {
         $validated = Validator::make($request->all(), [

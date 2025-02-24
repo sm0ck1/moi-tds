@@ -72,7 +72,7 @@ class ApiController extends Controller
 
         $portalPlacements = $portalPlacements->map(function ($portalPlacement) use ($domain) {
             $subDomain = MakeShortCode::generateRandomStringLower(2);
-            $portalPlacement['link'] = $subDomain . $portalPlacement['id'] . '.' . $domain;
+            $portalPlacement['link'] = 'https://' . $subDomain . $portalPlacement['id'] . '.' . $domain;
             return $portalPlacement;
         });
 

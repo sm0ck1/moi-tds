@@ -77,14 +77,12 @@ class ApiController extends Controller
         });
 
 
-
-
-//        if ($portalPlacements->isNotEmpty()) {
-//            $ids = $portalPlacements->pluck('id');
-//            PortalPlacement::query()
-//                ->whereIn('id', $ids)
-//                ->update(['get_to_ping' => 1]);
-//        }
+        if ($portalPlacements->isNotEmpty()) {
+            $ids = $portalPlacements->pluck('id');
+            PortalPlacement::query()
+                ->whereIn('id', $ids)
+                ->update(['get_to_ping' => 1]);
+        }
 
         if ($portalPlacements->isEmpty()) {
             return response()->json(['message' => 'No portal placements found.'], 404);

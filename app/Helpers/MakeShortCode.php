@@ -14,4 +14,15 @@ class MakeShortCode
         }
         return $randomString;
     }
+
+    public static function generateRandomStringLower($length = 10): string
+    {
+        $characters = 'abcdefghijklmnopqrstuvwxyz';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
 }

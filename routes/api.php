@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/short-url', [HelperController::class, 'getShortUrl'])->name('short-url');
+
+Route::get('get-portal-placements-with-domain', [ApiController::class, 'getPortalPlacementsWithDomain']);
 Route::get('get-portal-placements', [ApiController::class, 'getPortalPlacements'])->name('get-portal-placements');
 Route::get('get-portal-placements/{portalPlacement}', [ApiController::class, 'getPortalPlacementsOnlyForId']);
 Route::post('set-success-ping', [ApiController::class, 'setSuccessPing'])->name('set-success-ping');

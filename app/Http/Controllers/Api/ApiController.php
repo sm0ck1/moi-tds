@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\MakeShortCode;
 use App\Http\Controllers\Controller;
+use App\Models\Domain;
 use App\Models\PortalPlacement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +30,55 @@ class ApiController extends Controller
             ->lockForUpdate()
             ->get();
 
+        if ($portalPlacements->isNotEmpty()) {
+            $ids = $portalPlacements->pluck('id');
+            PortalPlacement::query()
+                ->whereIn('id', $ids)
+                ->update(['get_to_ping' => 1]);
+        }
+
+        if ($portalPlacements->isEmpty()) {
+            return response()->json(['message' => 'No portal placements found.'], 404);
+        }
+
+        return response()->json(['links' => $portalPlacements]);
+    }
+
+    public function getPortalPlacementsWithDomain(Request $request)
+    {
+        $validated = Validator::make($request->all(), [
+            'limit' => ['required', 'integer', 'min:1', 'max:100'],
+        ]);
+        if ($validated->fails()) {
+            return response()->json(['message' => 'Invalid request.'], 400);
+        }
+
+        $portalPlacements = PortalPlacement::query()
+            ->select('id', 'external_url')
+            ->where('ping_counter', 0)
+            ->where('get_to_ping', 0)
+            ->limit($request->limit)
+            ->lockForUpdate()
+            ->get();
+
+        $getDomain = Domain::query()->where('is_active_for_ping', 1)->first();
+
+        if (!$getDomain) {
+            return response()->json(['message' => 'No active domain for ping.'], 404);
+        }
+
+        $domain = $getDomain->name;
+
+
+        $portalPlacements = $portalPlacements->map(function ($portalPlacement) use ($domain) {
+            $subDomain = MakeShortCode::generateRandomStringLower(2);
+            $portalPlacement['link'] = $subDomain . $portalPlacement['id'] . '.' . $domain;
+            return $portalPlacement;
+        });
+
+
+
+
 //        if ($portalPlacements->isNotEmpty()) {
 //            $ids = $portalPlacements->pluck('id');
 //            PortalPlacement::query()
@@ -44,14 +95,9 @@ class ApiController extends Controller
 
     public function getPortalPlacementsOnlyForId(PortalPlacement $portalPlacement)
     {
-
-//        if ($portalPlacements->isNotEmpty()) {
-//            $ids = $portalPlacements->pluck('id');
-//            PortalPlacement::query()
-//                ->whereIn('id', $ids)
-//                ->update(['get_to_ping' => 1]);
-//        }
-
+        PortalPlacement::query()
+            ->where('id', $portalPlacement->id)
+            ->update(['ping_counter' => 1]);
 
         return response()->json($portalPlacement);
     }

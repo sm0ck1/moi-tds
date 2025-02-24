@@ -32,12 +32,12 @@ class PortalPlacementController extends Controller
 
         $portalPlacements = PortalPlacement::query()
             ->with('portal')
+            ->orderByDesc('updated_at')
             ->paginate(30);
 
 
         return Inertia::render('PortalPlacement/PortalPlacements', [
             'portalPlacements' => $portalPlacements,
-            'aa' => 'aaa',
             'inSearch' => $inSearch,
             'waitingForPing' => $waitingForPing,
             'pinged' => $pinged,
@@ -76,6 +76,16 @@ class PortalPlacementController extends Controller
         ]);
         $portalPlacement->update([
             'in_search' => $validated['in_search'],
+        ]);
+        return response()->json(['message' => 'Success']);
+    }
+
+
+    public function pingAgain(Request $request, PortalPlacement $portalPlacement): \Illuminate\Http\JsonResponse
+    {
+        $portalPlacement->update([
+            'ping_counter' => 0,
+            'get_to_ping' => 0
         ]);
         return response()->json(['message' => 'Success']);
     }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\HelperController;
+use App\Http\Controllers\Portal\PortalPlacementController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -12,5 +13,6 @@ Route::get('get-portal-placements', [ApiController::class, 'getPortalPlacements'
 Route::get('get-portal-placements/{portalPlacement}', [ApiController::class, 'getPortalPlacementsOnlyForId']);
 Route::post('send-google-ping', [ApiController::class, 'sendLinkToGoogle']);
 Route::post('set-success-ping', [ApiController::class, 'setSuccessPing'])->name('set-success-ping');
-Route::patch('set-in-search/{portalPlacement}', [\App\Http\Controllers\Portal\PortalPlacementController::class, 'inSearch'])->name('api-portal-placements.in_search');
+Route::patch('set-in-search/{portalPlacement}', [PortalPlacementController::class, 'inSearch'])->name('api-portal-placements.in_search');
+Route::patch('ping-again/{portalPlacement}', [PortalPlacementController::class, 'pingAgain'])->name('api-portal-placements.ping-again');
 

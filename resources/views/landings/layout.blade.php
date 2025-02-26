@@ -101,7 +101,7 @@
 
             const isMobile = /Mobile|Android|iPhone/i.test(ua);
             const resolution = `${window.screen.width}x${window.screen.height}`;
-            if (isMobile && resolution.split('x')[0] === resolution.split('x')[1]) {
+            if (isMobile && resolution.split('x')[0] === resolution.split('x')[1] || resolution === '800x600') {
                 return false;
             }
 
@@ -116,19 +116,22 @@
                 return false;
             }
 
-                const response = await fetch('/r/analytics', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({
-                        metrics: btoa(JSON.stringify(metrics)),
-                        uh: '{{ $user_unique_hash }}',
-                        fd: '{{ $first_data }}',
-                    })
-                });
-
+            let a = await fetch('/r/analytics', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    metrics: btoa(JSON.stringify(metrics)),
+                    uh: '{{ $user_unique_hash }}',
+                    fd: '{{ $first_data }}',
+                })
+            });
+            if (a.status === 200) {
+                const targetElement = document.querySelector('.my-view');
+                targetElement.innerHTML = '<div class="my-check"></div>';
+            }
 
         }
 
@@ -137,12 +140,6 @@
             showLoader(element);
 
             try {
-
-                const timeOnPage = Date.now() - pageLoadTime;
-                if (!hasInteracted || timeOnPage < 1000) {
-                    hideLoader(element);
-                    return false;
-                }
 
                 const encodedResource = element.dataset.resource;
                 const data = {
@@ -162,7 +159,6 @@
                 form.method = 'POST';
                 form.action = '/r/confirm';
                 form.style.display = 'none';
-
                 Object.entries(data).forEach(([key, value]) => {
                     const input = document.createElement('input');
                     input.type = 'hidden';
@@ -190,14 +186,35 @@
         document.addEventListener('mousemove', () => hasInteracted = true);
         document.addEventListener('touchstart', () => hasInteracted = true);
         document.addEventListener('scroll', () => hasInteracted = true);
-
+        const metrics = getMetrics();
         document.addEventListener('DOMContentLoaded', async () => {
-            const metrics = getMetrics();
+
             await sendMetricsToAnalytics(metrics);
             document.querySelectorAll('[data-resource]').forEach(element => {
                 element.style.cursor = 'pointer';
                 element.addEventListener('click', (e) => handleClick(e, element, metrics));
             });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkElement = setInterval(function () {
+                const targetElement = document.querySelector('.my-check');
+                if (targetElement) {
+                    clearInterval(checkElement);
+
+                    document.querySelectorAll('[data-resource]').forEach(element => {
+                        const mockEvent = new Event('click', {
+                            bubbles: true,
+                            cancelable: true
+                        });
+                        setTimeout(async function () {
+                            await handleClick(mockEvent, element, metrics);
+                            showLoader(element);
+                        }, 1000);
+                    });
+
+                }
+            }, 1000);
         });
     </script>
 </head>

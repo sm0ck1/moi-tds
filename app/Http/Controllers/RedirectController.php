@@ -21,7 +21,7 @@ class RedirectController extends Controller
     public function redirect(Request $request, $short_url)
     {
 
-        $ip = $request->get('ip') ?? $request->ip() ?? null;
+        $ip = $request->get('ip') ?? CheckIp::getClientIp() ?? null;
         $userAgent = $request->get('user_agent') ?? $request->header('User-Agent') ?? null;
         $referrer = $request->get('referrer') ?? $request->header('Referer') ?? '';
         $tracker = $request->get('t') ?? '';
@@ -52,7 +52,6 @@ class RedirectController extends Controller
         $agent->setUserAgent($userAgent);
         $deviceType = $agent->isMobile() || $agent->isTablet() ? 'mobile' : 'desktop';
         $visitDate = Carbon::now()->format('Y-m-d');
-
 
         $external_url = '';
         $portal_partner_link_id = 0;

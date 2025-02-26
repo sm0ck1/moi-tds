@@ -36,19 +36,6 @@ class CheckIp
             return ['error' => 'I don\'t like your IP address.'];
         }
 
-        // Генерируем уникальный ключ для rate limiting
-        $rateLimitKey = 'rate_limit_' . md5($ip . ($userAgent ?? ''));
-
-        // Проверяем, не превышен ли лимит запросов
-        $requestCount = Cache::get($rateLimitKey, 0);
-        if ($requestCount >= self::MAX_REQUESTS) {
-            Log::warning("Rate limit exceeded for IP: {$ip}, User-Agent: {$userAgent}");
-            return ['error' => 'Too many requests. Please try again later.'];
-        }
-
-        // Увеличиваем счётчик запросов
-        Cache::put($rateLimitKey, $requestCount + 1, self::REQUEST_INTERVAL);
-
         // Генерируем уникальный ключ для кеша
         $cacheKey = 'ip_info_' . md5($ip . ($userAgent ?? ''));
 
@@ -205,5 +192,26 @@ class CheckIp
     {
         $cacheKey = 'ip_info_' . md5($ip . ($userAgent ?? ''));
         Cache::forget($cacheKey);
+    }
+
+    public static function getClientIp(): false|string
+    {
+
+        $keys = [
+            'HTTP_CLIENT_IP',
+            'HTTP_X_FORWARDED_FOR',
+            'REMOTE_ADDR'
+        ];
+        foreach ($keys as $key) {
+            if (!empty($_SERVER[$key])) {
+                $array = explode(',', $_SERVER[$key]);
+                $ip = trim(end($array));
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
+            }
+        }
+        return false;
+
     }
 }

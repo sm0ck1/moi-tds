@@ -70,7 +70,7 @@ export default function PortalPlacementIndex({portalPlacements, ...counters}: Po
 
             const data = await response.json();
             router.reload({
-                only: ['portalPlacements', 'inSearch'],
+                only: ['portalPlacements', 'inSearch', ],
                 onSuccess: () => {
                     setLoading(0);
                 }

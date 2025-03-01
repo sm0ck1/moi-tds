@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Domain;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DomainCreateRequest;
 use App\Models\Domain;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class DomainController extends Controller
@@ -37,9 +39,10 @@ class DomainController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(DomainCreateRequest $request)
     {
-        //
+        Domain::create($request->validated());
+        return redirect()->route('domain.index');
     }
 
     /**
@@ -48,6 +51,21 @@ class DomainController extends Controller
     public function show(Domain $domain)
     {
         //
+    }
+
+    public function editCheckboxes(Request $request, Domain $domain)
+    {
+        $validation = Validator::make($request->all(), [
+            'is_active_for_ping' => 'nullable|boolean',
+            'is_active_for_code' => 'nullable|boolean',
+        ]);
+
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+
+        $domain->update($validation->validated());
+        return response()->json($domain);
     }
 
     /**
@@ -63,9 +81,10 @@ class DomainController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Domain $domain)
+    public function update(DomainCreateRequest $request, Domain $domain)
     {
-        //
+        $domain->update($request->validated());
+        return redirect()->route('domain.index');
     }
 
     /**

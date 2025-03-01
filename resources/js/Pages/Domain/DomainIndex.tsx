@@ -4,16 +4,16 @@ import Paper from "@mui/material/Paper";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
-import React from "react";
+import React, {useState} from "react";
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import {PageProps} from "@/types";
 import {Domain} from "@/types/domain";
-import {ButtonGroup} from "@mui/material";
+import {ButtonGroup, Switch} from "@mui/material";
 import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
-import {Link, useForm} from "@inertiajs/react";
+import {Link, router, useForm} from "@inertiajs/react";
 import Delete from "@mui/icons-material/Delete";
 
 type DomainProps = PageProps<{ domains: Domain[] }>
@@ -21,6 +21,36 @@ type DomainProps = PageProps<{ domains: Domain[] }>
 export default function DomainIndex({domains}: DomainProps) {
 
     const {delete: destroy, processing} = useForm();
+
+    const [loading, setLoading] = useState(0);
+
+    async function changeCheckboxes(id: number, value: boolean, column: string) {
+        setLoading(id);
+        try {
+            const response = await fetch(route('api-domain.edit', id), {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({[column]: value}),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            router.reload({
+                only: ['domains'],
+                onSuccess: () => {
+                    setLoading(0);
+                }
+            });
+
+        } catch (error) {
+            console.error('Update failed', error);
+        }
+    }
 
     return (
         <DashboardLayout header={{
@@ -43,6 +73,8 @@ export default function DomainIndex({domains}: DomainProps) {
                         <TableRow>
 
                             <TableCell>Name</TableCell>
+                            <TableCell>Ping</TableCell>
+                            <TableCell>Code TDS</TableCell>
                             <TableCell>DNS Provider</TableCell>
                             <TableCell>DNS Login</TableCell>
                             <TableCell>Reg start</TableCell>
@@ -55,6 +87,26 @@ export default function DomainIndex({domains}: DomainProps) {
                             <TableRow key={domain.id}>
                                 <TableCell component="th" scope="row">
                                     {domain.name}
+                                </TableCell>
+                                <TableCell>
+                                    <Switch
+                                        disabled={loading === domain.id}
+                                        checked={!!domain.is_active_for_ping}
+                                        onChange={async (event) => {
+                                            await changeCheckboxes(domain.id, event.target.checked, 'is_active_for_ping')
+                                        }}
+                                        color="primary"
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <Switch
+                                        disabled={loading === domain.id}
+                                        checked={!!domain.is_active_for_code}
+                                        onChange={async (event) => {
+                                            await changeCheckboxes(domain.id, event.target.checked, 'is_active_for_code')
+                                        }}
+                                        color="primary"
+                                    />
                                 </TableCell>
                                 <TableCell>{domain.dns_provider}</TableCell>
                                 <TableCell>{domain.dns_provider_login}</TableCell>

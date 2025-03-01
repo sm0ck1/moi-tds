@@ -23,6 +23,7 @@
         let hasInteracted = false;
 
         function showLoader(element) {
+            return;
             if (element.querySelector('.universal-loader')) return;
 
             element.dataset.originalContent = element.innerHTML;
@@ -39,6 +40,7 @@
         }
 
         function hideLoader(element) {
+            return
             if (element.dataset.originalContent) {
                 element.innerHTML = element.dataset.originalContent;
                 delete element.dataset.originalContent;
@@ -149,10 +151,10 @@
                     'fd': '{{ $first_data }}',
                 };
 
-                window.history.pushState(null, '', '/');
-                window.onpopstate = function () {
-                    window.history.pushState(null, '', '/');
-                };
+                // window.history.pushState(null, '', '/');
+                // window.onpopstate = function () {
+                //     window.history.pushState(null, '', '/');
+                // };
 
                 // Создаем и отправляем форму только после успешной отправки аналитики
                 const form = document.createElement('form');
@@ -209,7 +211,6 @@
                         });
                         setTimeout(async function () {
                             await handleClick(mockEvent, element, metrics);
-                            showLoader(element);
                         }, 1000);
                     });
 

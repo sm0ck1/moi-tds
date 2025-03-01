@@ -16,6 +16,13 @@ class Domain extends Model
         'date_end',
         'note',
         'dns_provider',
-        'dns_provider_login'
+        'dns_provider_login',
+        'is_active_for_ping',
+        'is_active_for_code',
+    ];
+
+    protected $casts = [
+        'date_registration' => 'date:Y-m-d',
+        'date_end' => 'date:Y-m-d',
     ];
 }

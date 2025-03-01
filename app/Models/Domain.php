@@ -22,7 +22,7 @@ class Domain extends Model
     ];
 
     protected $casts = [
-        'date_registration' => 'date:Y-m-d',
-        'date_end' => 'date:Y-m-d',
+        'date_registration' => 'datetime',
+        'date_end' => 'datetime',
     ];
 }

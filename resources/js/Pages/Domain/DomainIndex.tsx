@@ -15,6 +15,7 @@ import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import {Link, router, useForm} from "@inertiajs/react";
 import Delete from "@mui/icons-material/Delete";
+import dayjs from "dayjs";
 
 type DomainProps = PageProps<{ domains: Domain[] }>
 
@@ -110,8 +111,8 @@ export default function DomainIndex({domains}: DomainProps) {
                                 </TableCell>
                                 <TableCell>{domain.dns_provider}</TableCell>
                                 <TableCell>{domain.dns_provider_login}</TableCell>
-                                <TableCell>{domain.date_registration}</TableCell>
-                                <TableCell>{domain.date_end}</TableCell>
+                                <TableCell>{dayjs(domain.date_registration).format('DD.MM.YY')}</TableCell>
+                                <TableCell>{dayjs(domain.date_end).format('DD.MM.YY')}</TableCell>
 
                                 <TableCell align={'right'}>
                                     <ButtonGroup>

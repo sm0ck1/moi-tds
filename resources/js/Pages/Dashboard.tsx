@@ -1,59 +1,85 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid2';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
-import RefreshIcon from '@mui/icons-material/Refresh';
 import DashboardLayout from "@/Components/shared/DashboardLayout";
+import {PageProps} from "@/types";
+import {Tab, Tabs} from '@mui/material';
+import ReportTable from "@/Pages/Reports/Partials/ShowDaily";
+import Box from "@mui/material/Box";
+import TodayVsYesterdayCard from "@/Pages/Reports/Partials/TodayVsYesterdayCard";
 
-export default function Dashboard() {
+interface TabPanelProps {
+    children?: React.ReactNode;
+    index: number;
+    value: number;
+}
+
+function CustomTabPanel(props: TabPanelProps) {
+    const {children, value, index, ...other} = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {value === index && <Box>{children}</Box>}
+        </div>
+    );
+}
+
+export default function Dashboard({allReports, reports, todayVsYesterday}: PageProps<DashboardProps>) {
+    const [value, setValue] = React.useState(0);
+
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setValue(newValue);
+    };
 
     return (
         <DashboardLayout
+            header={{
+                title: 'Dashboard',
+                filters:  [
+                    {
+                        type: 'button' as const,
+                        href: `/dashboard#filter=today`,
+                        label: 'Today vs Yesterday',
+                        current: value === -1,
+                        handleClick: () => {
+                            setValue(-1)
+                        }
+                    },
+                    ...Object.keys(reports).map((key, index) => {
+                        return {
+                            type: 'button' as const,
+                            href: `/dashboard#filter=${key}`,
+                            label: reports[key].label,
+                            current: value === index,
+                            handleClick: () => {
+                                setValue(index)
+                            }
+                        }
+                    })
+                ],
+            }}
         >
-            <Paper sx={{maxWidth: 936, margin: 'auto', overflow: 'hidden'}}>
-                <AppBar
-                    position="static"
-                    color="default"
-                    elevation={0}
-                    sx={{borderBottom: '1px solid rgba(0, 0, 0, 0.12)'}}
-                >
-                    <Toolbar>
-                        <Grid container spacing={2} sx={{alignItems: 'center'}}>
-                            <Grid >
-                                <SearchIcon color="inherit" sx={{display: 'block'}}/>
-                            </Grid>
-                            <Grid size={{xs: 12}}>
-                                <TextField
-                                    fullWidth
-                                    placeholder="Search by email address, phone number, or user UID"
-                                    variant="standard"
 
-                                />
-                            </Grid>
-                            <Grid >
-                                <Button variant="contained" sx={{mr: 1}}>
-                                    Add user
-                                </Button>
-                                <Tooltip title="Reload">
-                                    <IconButton>
-                                        <RefreshIcon color="inherit" sx={{display: 'block'}}/>
-                                    </IconButton>
-                                </Tooltip>
-                            </Grid>
-                        </Grid>
-                    </Toolbar>
-                </AppBar>
-                <Typography align="center" sx={{color: 'text.secondary', my: 5, mx: 2}}>
-                    No users for this project yet
-                </Typography>
-            </Paper>
+            <Box sx={{
+                mt: 3
+            }}>
+                <CustomTabPanel key={-1} index={-1} value={value}>
+                    <TodayVsYesterdayCard data={todayVsYesterday}/>
+                </CustomTabPanel>
+                {Object.keys(reports).map(
+                    (key, index) => {
+                        return (
+                            <CustomTabPanel key={key} index={index} value={value}>
+                                <ReportTable report={allReports[key]} />
+                            </CustomTabPanel>
+                        )
+                    }
+                )}
+            </Box>
         </DashboardLayout>
     );
 }

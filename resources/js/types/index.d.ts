@@ -11,6 +11,7 @@ export type PageProps<
     pusher: {
         key: string
     },
+    current_time: string,
     auth: {
         user: User;
     };

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -38,6 +39,7 @@ class HandleInertiaRequests extends Middleware
             'pusher' => [
                 'key' => config('broadcasting.connections.pusher.key'),
             ],
+            'current_time' => $now = Carbon::now()->format('H:i')
         ];
     }
 }

@@ -15,15 +15,15 @@ import {ButtonGroup} from "@mui/material";
 interface HeaderProps {
     onDrawerToggle: () => void;
     title?: string;
-    buttons?: { type: 'link' | 'button', href: string, label: string }[];
-    filters?: { type: 'link' | 'button', href: string, label: string }[];
+    buttons?: { type: 'link' | 'button', href: string, label: string, handleClick?: ()=>void  }[];
+    filters?: { type: 'link' | 'button', href: string, label: string, current?: boolean, handleClick?: ()=>void }[];
 }
 
 export default function Header({onDrawerToggle, buttons, filters, title}: HeaderProps) {
 
     return (
         <>
-            <Head title={title} />
+            <Head title={title}/>
             <AppBar color="primary" position="sticky" elevation={0}>
                 <Toolbar>
                     <Grid container spacing={1}
@@ -54,7 +54,7 @@ export default function Header({onDrawerToggle, buttons, filters, title}: Header
                     </Grid>
                 </Toolbar>
             </AppBar>
-            {buttons && (
+            {(buttons || filters) && (
                 <AppBar
                     component="div"
                     color="primary"
@@ -63,32 +63,35 @@ export default function Header({onDrawerToggle, buttons, filters, title}: Header
                 >
                     <Toolbar>
                         <Grid container spacing={1}
-                              sx={{alignItems: 'center',  width: '100%'}}>
-                            <Grid>
-                                <Grid container>
-                                    {buttons && buttons.map((button, index) => (
-                                        <Grid key={index}>
-                                            {button.type === 'link' ? (
-                                                <Button
-                                                    color="info"
-                                                    variant="contained"
-                                                    component={Link as React.ElementType}
-                                                    href={button.href}
-                                                >
-                                                    {button.label}
-                                                </Button>
-                                            ) : (
-                                                <Button
-                                                    color="inherit"
-                                                    variant="outlined"
-                                                >
-                                                    {button.label}
-                                                </Button>
-                                            )}
-                                        </Grid>
-                                    ))}
+                              sx={{alignItems: 'center', width: '100%'}}>
+                            {buttons && (
+                                <Grid>
+                                    <Grid container>
+                                        {buttons.map((button, index) => (
+                                            <Grid key={index}>
+                                                {button.type === 'link' ? (
+                                                    <Button
+                                                        color="info"
+                                                        variant="contained"
+                                                        component={Link as React.ElementType}
+                                                        href={button.href}
+                                                    >
+                                                        {button.label}
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        color="inherit"
+                                                        variant="outlined"
+                                                        onClick={button.handleClick}
+                                                    >
+                                                        {button.label}
+                                                    </Button>
+                                                )}
+                                            </Grid>
+                                        ))}
+                                    </Grid>
                                 </Grid>
-                            </Grid>
+                            )}
                             {filters && (
                                 <Grid component={ButtonGroup}>
                                     {filters.map((button, index) => (
@@ -99,14 +102,23 @@ export default function Header({onDrawerToggle, buttons, filters, title}: Header
                                                     variant="contained"
                                                     component={Link as React.ElementType}
                                                     href={button.href}
-                                                    disabled={window.location.href === button.href}
+                                                    disabled={window.location.href === button.href || button.current}
                                                 >
                                                     {button.label}
                                                 </Button>
                                             ) : (
                                                 <Button
-                                                    color="inherit"
-                                                    variant="outlined"
+                                                    sx={{
+                                                        '&:disabled': {
+                                                            color: button.current ? '#555' : 'inherit',
+                                                            borderColor: button.current ? '#f5f5f5' : 'inherit',
+                                                            backgroundColor: button.current ? '#f5f5f5' : 'inherit',
+                                                        }
+                                                    }}
+                                                    color="info"
+                                                    variant="contained"
+                                                    onClick={button.handleClick}
+                                                    disabled={button.current}
                                                 >
                                                     {button.label}
                                                 </Button>

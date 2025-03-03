@@ -50,10 +50,11 @@ export default function Dashboard({allReports, reports, todayVsYesterday}: PageP
                         }
                     },
                     ...Object.keys(reports).map((key, index) => {
+                        const typedKey = key as keyof allReportsProps;
                         return {
                             type: 'button' as const,
                             href: `/dashboard#filter=${key}`,
-                            label: reports[key].label,
+                            label: reports[typedKey].label,
                             current: value === index,
                             handleClick: () => {
                                 setValue(index)
@@ -72,9 +73,10 @@ export default function Dashboard({allReports, reports, todayVsYesterday}: PageP
                 </CustomTabPanel>
                 {Object.keys(reports).map(
                     (key, index) => {
+                        const typedKey = key as keyof allReportsProps;
                         return (
                             <CustomTabPanel key={key} index={index} value={value}>
-                                <ReportTable report={allReports[key]} />
+                                <ReportTable report={allReports[typedKey]} />
                             </CustomTabPanel>
                         )
                     }

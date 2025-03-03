@@ -4,18 +4,20 @@ import {
     Card,
     CardContent,
     Typography,
-    Grid,
     Divider,
     Chip,
     Stack,
     Paper,
     LinearProgress
 } from '@mui/material';
+
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import {TodayVsYesterdayProps} from "@/types/report";
+import Grid from "@mui/material/Grid2";
 
 const TodayVsYesterdayCard = ({data}: { data: TodayVsYesterdayProps }) => {
     const {
@@ -58,7 +60,10 @@ const TodayVsYesterdayCard = ({data}: { data: TodayVsYesterdayProps }) => {
 
                 {/* Comparison Cards */}
                 <Grid container spacing={3} mb={3}>
-                    <Grid item xs={6}>
+                    <Grid size={{
+                        xs: 12,
+                        sm: 6
+                    }}>
                         <Paper elevation={2}
                                sx={{p: 2, height: '100%', bgcolor: 'primary.light', color: 'primary.contrastText'}}>
                             <Typography variant="h6" gutterBottom align="center">
@@ -88,7 +93,10 @@ const TodayVsYesterdayCard = ({data}: { data: TodayVsYesterdayProps }) => {
                         </Paper>
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid size={{
+                        xs: 12,
+                        sm: 6
+                    }}>
                         <Paper elevation={2} sx={{p: 2, height: '100%', bgcolor: 'grey.200'}}>
                             <Typography variant="h6" gutterBottom align="center" color="text.secondary">
                                 Вчера
@@ -127,7 +135,10 @@ const TodayVsYesterdayCard = ({data}: { data: TodayVsYesterdayProps }) => {
                 </Typography>
 
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid size={{
+                        xs: 12,
+                        sm: 6
+                    }}>
                         <Box display="flex" justifyContent="space-between" alignItems="center">
                             <Box display="flex" alignItems="center">
                                 <CheckCircleIcon color="success" sx={{mr: 1}}/>
@@ -147,7 +158,10 @@ const TodayVsYesterdayCard = ({data}: { data: TodayVsYesterdayProps }) => {
                         </Box>
                     </Grid>
 
-                    <Grid item xs={12}>
+                    <Grid size={{
+                        xs: 12,
+                        sm: 6
+                    }}>
                         <Box display="flex" justifyContent="space-between" alignItems="center">
                             <Box display="flex" alignItems="center">
                                 <CancelIcon color="error" sx={{mr: 1}}/>
@@ -173,37 +187,3 @@ const TodayVsYesterdayCard = ({data}: { data: TodayVsYesterdayProps }) => {
 };
 
 export default TodayVsYesterdayCard;
-
-// Example usage:
-/*
-import { TodayVsYesterdayCard } from './components';
-
-function App() {
-  const sampleData = {
-    currentTime: "15:30",
-    difference: {
-      confirmed: 15,
-      confirmed_percent: 12.5,
-      percent: 8.33,
-      total: 20
-    },
-    isPositive: true,
-    today: {
-      confirmed: 135,
-      not_confirmed: 125,
-      total: 260
-    },
-    yesterday: {
-      confirmed: 120,
-      not_confirmed: 120,
-      total: 240
-    }
-  };
-
-  return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
-      <TodayVsYesterdayCard data={sampleData} />
-    </div>
-  );
-}
-*/

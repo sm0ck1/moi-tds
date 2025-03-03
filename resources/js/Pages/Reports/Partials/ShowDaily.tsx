@@ -4,12 +4,12 @@ import {
     TableCell, TableContainer, TableHead, TableRow, Chip, Divider
 } from '@mui/material';
 import {
-    TrendingUp, TrendingDown, CalendarToday, Language, CheckCircle,
-    Cancel, BarChart
+    TrendingUp, TrendingDown, CalendarToday, Language, BarChart
 } from '@mui/icons-material';
 import Grid from "@mui/material/Grid2";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import {ReportTableProps} from "@/types/report";
 dayjs.extend(customParseFormat);
 
 const formatDate = (dateString: string) => {

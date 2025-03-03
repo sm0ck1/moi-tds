@@ -1,17 +1,17 @@
-type ReportProps = {
+export type ReportProps = {
     start: string,
     end: string,
     label: string,
 }
 
-type allReportsProps = {
+export type allReportsProps = {
     current_month: ReportProps,
     current_week: ReportProps,
     last_8_days: ReportProps,
     previous_month: ReportProps,
     previous_week: ReportProps,
 }
-type ReportTableProps = {
+export type ReportTableProps = {
     daily: {
         count_total: string,
         visit_date: string,
@@ -37,7 +37,7 @@ type ReportTableProps = {
     }
 }
 
-type ReportTable = {
+export type ReportTable = {
     current_month: ReportTableProps,
     current_week: ReportTableProps,
     last_8_days: ReportTableProps,
@@ -45,7 +45,7 @@ type ReportTable = {
     previous_week: ReportTableProps,
 }
 
-type TodayVsYesterdayProps = {
+export type TodayVsYesterdayProps = {
     currentTime: string,
     difference: {
         confirmed: number,
@@ -66,7 +66,7 @@ type TodayVsYesterdayProps = {
     }
 }
 
-type DashboardProps = {
+export type DashboardProps = {
     allReports: ReportTable,
     reports: allReportsProps,
     todayVsYesterday: TodayVsYesterdayProps,

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import DashboardLayout from "@/Components/shared/DashboardLayout";
 import {PageProps} from "@/types";
-import {Tab, Tabs} from '@mui/material';
 import ReportTable from "@/Pages/Reports/Partials/ShowDaily";
 import Box from "@mui/material/Box";
 import TodayVsYesterdayCard from "@/Pages/Reports/Partials/TodayVsYesterdayCard";
+import {allReportsProps, DashboardProps} from "@/types/report";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -30,10 +30,6 @@ function CustomTabPanel(props: TabPanelProps) {
 
 export default function Dashboard({allReports, reports, todayVsYesterday}: PageProps<DashboardProps>) {
     const [value, setValue] = React.useState(0);
-
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        setValue(newValue);
-    };
 
     return (
         <DashboardLayout

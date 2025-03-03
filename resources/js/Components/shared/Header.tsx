@@ -15,7 +15,7 @@ import {ButtonGroup} from "@mui/material";
 interface HeaderProps {
     onDrawerToggle: () => void;
     title?: string;
-    buttons?: { type: 'link' | 'button', href: string, label: string, handleClick?: ()=>void  }[];
+    buttons?: { type: 'link' | 'button', href: string, label: string, current?: boolean, handleClick?: ()=>void  }[];
     filters?: { type: 'link' | 'button', href: string, label: string, current?: boolean, handleClick?: ()=>void }[];
 }
 

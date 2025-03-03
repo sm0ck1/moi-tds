@@ -168,8 +168,8 @@ const drawerWidth = 256;
 
 type HeaderProps = {
     title: string;
-    buttons?: { type: 'link' | 'button', href: string, label: string }[];
-    filters?: { type: 'link' | 'button', href: string, label: string }[];
+    buttons?: { type: 'link' | 'button', href: string, label: string, current?: boolean, handleClick?: ()=>void  }[];
+    filters?: { type: 'link' | 'button', href: string, label: string, current?: boolean, handleClick?: ()=>void }[];
 };
 
 export default function DashboardLayout({header, children}: PropsWithChildren<{ header?: HeaderProps }>) {

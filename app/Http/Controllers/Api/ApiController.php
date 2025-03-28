@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\MakeShortCode;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PortalPlacementRequest;
 use App\Models\Domain;
 use App\Models\PortalPlacement;
 use Illuminate\Http\Request;
@@ -107,6 +108,7 @@ class ApiController extends Controller
             'links'   => ['required', 'array'],
             'links.*' => ['required', 'url'],
         ]);
+
         if ($validated->fails()) {
             return response()->json(['message' => 'Invalid request.'], 400);
         }
@@ -143,4 +145,26 @@ class ApiController extends Controller
 
         return response()->json($result);
     }
+
+    public function addNewLinksToPing(Request $request)
+    {
+        $validated = Validator::make($request->all(), [
+            'token'   => ['required', 'string'],
+            'portal_id' => ['required', 'integer'],
+            'link'      => ['required', 'string'],
+        ]);
+        if ($validated['token'] !== env('APP_TOKEN_API')) {
+            return response()->json(['message' => 'Invalid token.'], 403);
+        }
+        $link = [
+            'external_url' => $validated['link'],
+            'portal_id'    => $validated['portal_id'],
+            'created_at'   => now(),
+            'updated_at'   => now(),
+        ];
+
+        PortalPlacement::insert($link);
+        return response()->json($link);
+    }
+
 }

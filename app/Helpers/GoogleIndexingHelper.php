@@ -148,8 +148,11 @@ class GoogleIndexingHelper
             'type' => 'URL_UPDATED'
         ]);
 
+
+
         return $response->json();
     }
+
 
     /**
      * Send batch URL notifications

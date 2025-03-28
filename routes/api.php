@@ -13,6 +13,7 @@ Route::get('get-portal-placements-with-domain', [ApiController::class, 'getPorta
 Route::get('get-portal-placements', [ApiController::class, 'getPortalPlacements'])->name('get-portal-placements');
 Route::get('get-portal-placements/{portalPlacement}', [ApiController::class, 'getPortalPlacementsOnlyForId']);
 Route::post('send-google-ping', [ApiController::class, 'sendLinkToGoogle']);
+Route::post('add-new-links-to-ping', [ApiController::class, 'addNewLinksToPing']);
 Route::post('set-success-ping', [ApiController::class, 'setSuccessPing'])->name('set-success-ping');
 Route::patch('set-in-search/{portalPlacement}', [PortalPlacementController::class, 'inSearch'])->name('api-portal-placements.in_search');
 Route::patch('ping-again/{portalPlacement}', [PortalPlacementController::class, 'pingAgain'])->name('api-portal-placements.ping-again');

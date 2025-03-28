@@ -153,12 +153,15 @@ class ApiController extends Controller
             'portal_id' => ['required', 'integer'],
             'link'      => ['required', 'string'],
         ]);
-        if ($validated['token'] !== env('APP_TOKEN_API')) {
+        if ($validated->fails()) {
+            return response()->json(['message' => 'Invalid request.'], 400);
+        }
+        if ($request->token !== env('APP_TOKEN_API')) {
             return response()->json(['message' => 'Invalid token.'], 403);
         }
         $link = [
-            'external_url' => $validated['link'],
-            'portal_id'    => $validated['portal_id'],
+            'external_url' => $request->get('link'),
+            'portal_id'    => $request->get('portal_id'),
             'created_at'   => now(),
             'updated_at'   => now(),
         ];

@@ -154,7 +154,10 @@ class ApiController extends Controller
             'link'      => ['required', 'string'],
         ]);
         if ($validated->fails()) {
-            return response()->json(['message' => 'Invalid request.'], 400);
+            return response()->json([
+                'message' => 'Invalid request.',
+                'errors' => $validated->errors()
+                ], 400);
         }
         if ($request->token !== env('APP_TOKEN_API')) {
             return response()->json(['message' => 'Invalid token.'], 403);

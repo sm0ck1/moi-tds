@@ -12,7 +12,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import DnsRoundedIcon from '@mui/icons-material/DnsRounded';
 import DatasetLinkedIcon from '@mui/icons-material/DatasetLinked';
 import {Link} from '@inertiajs/react';
-
+import {usePage} from '@inertiajs/react';
 
 const item = {
     py: '2px',
@@ -30,9 +30,11 @@ const itemCategory = {
 };
 
 export default function Navigator(props: DrawerProps) {
+    const page = usePage();
+
     const categories = [
         {
-            id: 'TDS',
+            id: 'Current time: ' + page.props.current_time,
             children: [
                 {
                     id: 'Dashboard',
@@ -86,11 +88,12 @@ export default function Navigator(props: DrawerProps) {
     ];
 
     const {...other} = props;
+
     return (
         <Drawer variant="permanent" {...other}>
             <List disablePadding>
                 <ListItem sx={{...item, ...itemCategory, fontSize: 22, color: '#fff'}}>
-                    MOI TDS
+                    MOI TDS {page.props.env === 'dev' ? 'dev' : ''}
                 </ListItem>
 
                 {categories.map(({id, children}) => (

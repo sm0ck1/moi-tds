@@ -36,6 +36,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'env' => env('APP_ENV', 'dev'),
             'pusher' => [
                 'key' => config('broadcasting.connections.pusher.key'),
             ],

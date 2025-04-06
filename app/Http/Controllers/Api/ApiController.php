@@ -135,7 +135,7 @@ class ApiController extends Controller
         if ($validated->fails()) {
             return response()->json(['message' => 'Invalid request.'], 400);
         }
-        if ($request->token !== env('APP_TOKEN_API')) {
+        if ($request->get('token') !== env('APP_TOKEN_API')) {
             return response()->json(['message' => 'Invalid token.'], 403);
         }
         $googleIndexing = new GoogleIndexingHelper();
@@ -159,7 +159,8 @@ class ApiController extends Controller
                 'errors' => $validated->errors()
                 ], 400);
         }
-        if ($request->get('token') !== env('APP_TOKEN_API')) {
+
+        if ($request->get('token') != config('api.token')) {
             return response()->json(['message' => 'Invalid token.'], 403);
         }
         $link = [

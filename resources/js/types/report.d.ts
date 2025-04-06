@@ -24,6 +24,7 @@ export type ReportTableProps = {
         count_not_confirmed: string,
         count_confirmed: string,
     }[],
+    trackers: TrackersStatProps[],
     metrics: {
         avg_daily_visits: string,
         conversion_rate: string,
@@ -63,7 +64,9 @@ export type TodayVsYesterdayProps = {
         confirmed: number,
         not_confirmed: number,
         total: number
-    }
+    },
+    trackersToday: TrackersStatProps[],
+    trackersYesterday: TrackersStatProps[],
 }
 
 export type DashboardProps = {
@@ -75,4 +78,11 @@ export type DashboardProps = {
         total_not_confirmed: number,
         total_visits: number
     }
+}
+
+export type TrackersStatProps = {
+        count_total: string,
+        tracker: string,
+        count_not_confirmed: string,
+        count_confirmed: string,
 }

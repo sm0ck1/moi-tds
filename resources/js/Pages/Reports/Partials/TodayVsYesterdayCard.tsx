@@ -8,7 +8,7 @@ import {
     Chip,
     Stack,
     Paper,
-    LinearProgress
+    LinearProgress, TableContainer, Table, TableHead, TableRow, TableCell, TableBody
 } from '@mui/material';
 
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -18,6 +18,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import {TodayVsYesterdayProps} from "@/types/report";
 import Grid from "@mui/material/Grid2";
+import {Language} from "@mui/icons-material";
+import Trackers from "@/Pages/Reports/Partials/Trackers";
 
 const TodayVsYesterdayCard = ({data}: { data: TodayVsYesterdayProps }) => {
     const {
@@ -25,7 +27,9 @@ const TodayVsYesterdayCard = ({data}: { data: TodayVsYesterdayProps }) => {
         difference,
         isPositive,
         today,
-        yesterday
+        yesterday,
+        trackersToday,
+        trackersYesterday
     } = data;
 
     // Calculate confirmation percentages
@@ -128,6 +132,35 @@ const TodayVsYesterdayCard = ({data}: { data: TodayVsYesterdayProps }) => {
                 </Grid>
 
                 {/* Detailed stats */}
+                <Divider sx={{my: 2}}/>
+                <Grid container spacing={3} mb={3}>
+                    <Grid size={{
+                        xs: 12,
+                        sm: 6
+                    }}>
+                        <Paper>
+                            <Box sx={{p: 2}}>
+                                <Typography variant="h6" gutterBottom sx={{display: 'flex', alignItems: 'center'}}>
+                                    <Language sx={{mr: 1}}/> Trackers today
+                                </Typography>
+                            </Box>
+                            <Trackers trackers={trackersToday}/>
+                        </Paper>
+                    </Grid>
+                    <Grid size={{
+                        xs: 12,
+                        sm: 6
+                    }}>
+                        <Paper>
+                            <Box sx={{p: 2}}>
+                                <Typography variant="h6" gutterBottom sx={{display: 'flex', alignItems: 'center'}}>
+                                    <Language sx={{mr: 1}}/> Trackers yesterday
+                                </Typography>
+                            </Box>
+                            <Trackers trackers={trackersYesterday}/>
+                        </Paper>
+                    </Grid>
+                </Grid>
                 <Divider sx={{my: 2}}/>
 
                 <Typography variant="subtitle1" gutterBottom fontWeight="medium">

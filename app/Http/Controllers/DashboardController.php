@@ -137,6 +137,28 @@ class DashboardController extends Controller
             $confirmedPercentChange = round(($confirmedDifference / $yesterdayStats->count_confirmed) * 100, 2);
         }
 
+        $trackerStatsToday = VisitUser::query()
+            ->selectRaw('
+                tracker,
+                SUM(CASE WHEN confirm_click = 0 THEN 1 ELSE 0 END) as count_not_confirmed,
+                SUM(CASE WHEN confirm_click = 1 THEN 1 ELSE 0 END) as count_confirmed,
+                COUNT(*) as count_total')
+            ->whereDate('created_at', Carbon::today())
+            ->groupBy('tracker')
+            ->orderBy('count_total', 'DESC')
+            ->get();
+
+        $trackerStatsYesterday = VisitUser::query()
+            ->selectRaw('
+                tracker,
+                SUM(CASE WHEN confirm_click = 0 THEN 1 ELSE 0 END) as count_not_confirmed,
+                SUM(CASE WHEN confirm_click = 1 THEN 1 ELSE 0 END) as count_confirmed,
+                COUNT(*) as count_total')
+            ->whereDate('created_at', Carbon::yesterday())
+            ->groupBy('tracker')
+            ->orderBy('count_total', 'DESC')
+            ->get();
+
         return [
             'today'       => [
                 'total'         => $todayStats->count_total,
@@ -155,7 +177,9 @@ class DashboardController extends Controller
                 'confirmed_percent' => $confirmedPercentChange
             ],
             'currentTime' => $now->format('H:i'),
-            'isPositive'  => $difference >= 0
+            'isPositive'  => $difference >= 0,
+            'trackersToday' => $trackerStatsToday,
+            'trackersYesterday' => $trackerStatsYesterday,
         ];
     }
 
@@ -221,14 +245,31 @@ class DashboardController extends Controller
         // Статистика по доменам
         $domainStats = VisitUser::query()
             ->selectRaw('
-                SUBSTRING_INDEX(SUBSTRING_INDEX(referrer, "/", 1), "https://", -1) as domain,
+                REPLACE(
+                    SUBSTRING_INDEX(
+                        SUBSTRING_INDEX(
+                            TRIM(TRAILING "/" FROM referrer),
+                            "//", -1),
+                        "/", 1),
+                "www.", "") as domain,
                 SUM(CASE WHEN confirm_click = 0 THEN 1 ELSE 0 END) as count_not_confirmed,
                 SUM(CASE WHEN confirm_click = 1 THEN 1 ELSE 0 END) as count_confirmed,
                 COUNT(*) as count_total')
             ->whereBetween('visit_date', [$startDate, $endDate])
             ->groupBy('domain')
             ->orderBy('count_total', 'DESC')
-            ->limit(10) // Top 10 доменов
+//            ->limit(10) // Top 10 доменов
+            ->get();
+
+        $trackerStats = VisitUser::query()
+            ->selectRaw('
+                tracker,
+                SUM(CASE WHEN confirm_click = 0 THEN 1 ELSE 0 END) as count_not_confirmed,
+                SUM(CASE WHEN confirm_click = 1 THEN 1 ELSE 0 END) as count_confirmed,
+                COUNT(*) as count_total')
+            ->whereBetween('visit_date', [$startDate, $endDate])
+            ->groupBy('tracker')
+            ->orderBy('count_total', 'DESC')
             ->get();
 
         // Расчет коэффициента конверсии
@@ -241,6 +282,7 @@ class DashboardController extends Controller
             'total'   => $totalStats,
             'daily'   => $dailyStats,
             'domains' => $domainStats,
+            'trackers' => $trackerStats,
             'metrics' => [
                 'conversion_rate'  => round($conversionRate, 2),
                 'days_count'       => $dailyStats->count(),

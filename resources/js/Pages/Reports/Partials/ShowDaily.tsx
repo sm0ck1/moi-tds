@@ -10,6 +10,8 @@ import Grid from "@mui/material/Grid2";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import {ReportTableProps} from "@/types/report";
+import Trackers from "@/Pages/Reports/Partials/Trackers";
+
 dayjs.extend(customParseFormat);
 
 const formatDate = (dateString: string) => {
@@ -20,7 +22,7 @@ const formatDate = (dateString: string) => {
 const ReportTable = ({report}: {
     report: ReportTableProps
 }) => {
-    const {daily, domains, metrics, period, total} = report;
+    const {daily, domains, trackers, metrics, period, total} = report;
     return (
         <Box>
             <Box sx={{mb: 3, display: 'flex', alignItems: 'center', p: 2}} component={Paper}>
@@ -196,6 +198,17 @@ const ReportTable = ({report}: {
                         <Paper>
                             <Box sx={{p: 2}}>
                                 <Typography variant="h6" gutterBottom sx={{display: 'flex', alignItems: 'center'}}>
+                                    <Language sx={{mr: 1}}/> Trackers
+                                </Typography>
+                            </Box>
+
+                            <Trackers trackers={trackers}/>
+                        </Paper>
+                    </Box>
+                    <Box sx={{mb: 4}}>
+                        <Paper>
+                            <Box sx={{p: 2}}>
+                                <Typography variant="h6" gutterBottom sx={{display: 'flex', alignItems: 'center'}}>
                                     <Language sx={{mr: 1}}/> Domains
                                 </Typography>
                             </Box>
@@ -245,7 +258,9 @@ const ReportTable = ({report}: {
                             </TableContainer>
                         </Paper>
                     </Box>
+
                 </Grid>
+
             </Grid>
         </Box>
     );

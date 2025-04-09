@@ -19,30 +19,30 @@ class DashboardController extends Controller
 
         // Готовим данные для всех основных отчетов
         $reports = [
-            'last_8_days'    => [
+            'last_8_days' => [
                 'start' => $now->copy()->subDays(7)->startOfDay()->format('Y-m-d'),
-                'end'   => $now->format('Y-m-d'),
-                'label' => 'Last 8 days'
+                'end' => $now->format('Y-m-d'),
+                'label' => 'Last 8 days',
             ],
-            'current_week'   => [
+            'current_week' => [
                 'start' => $now->copy()->startOfWeek()->format('Y-m-d'),
-                'end'   => $now->copy()->endOfWeek()->format('Y-m-d'),
-                'label' => 'Current week'
+                'end' => $now->copy()->endOfWeek()->format('Y-m-d'),
+                'label' => 'Current week',
             ],
-            'previous_week'  => [
+            'previous_week' => [
                 'start' => $now->copy()->subWeek()->startOfWeek()->format('Y-m-d'),
-                'end'   => $now->copy()->subWeek()->endOfWeek()->format('Y-m-d'),
-                'label' => 'Previous week'
+                'end' => $now->copy()->subWeek()->endOfWeek()->format('Y-m-d'),
+                'label' => 'Previous week',
             ],
-            'current_month'  => [
+            'current_month' => [
                 'start' => $now->copy()->startOfMonth()->format('Y-m-d'),
-                'end'   => $now->copy()->endOfMonth()->format('Y-m-d'),
-                'label' => 'Current month'
+                'end' => $now->copy()->endOfMonth()->format('Y-m-d'),
+                'label' => 'Current month',
             ],
             'previous_month' => [
                 'start' => $now->copy()->subMonth()->startOfMonth()->format('Y-m-d'),
-                'end'   => $now->copy()->subMonth()->endOfMonth()->format('Y-m-d'),
-                'label' => 'Previous month'
+                'end' => $now->copy()->subMonth()->endOfMonth()->format('Y-m-d'),
+                'label' => 'Previous month',
             ],
         ];
 
@@ -53,8 +53,8 @@ class DashboardController extends Controller
         if ($customStart && $customEnd) {
             $reports['custom'] = [
                 'start' => $customStart,
-                'end'   => $customEnd,
-                'label' => 'Пользовательский период'
+                'end' => $customEnd,
+                'label' => 'Пользовательский период',
             ];
         }
 
@@ -75,11 +75,11 @@ class DashboardController extends Controller
             ->first();
 
         return Inertia::render('Dashboard', [
-            'allReports'       => $dashboardData,
-            'totalStats'       => $totalStats,
-            'reports'          => $reports,
-            'hasCustomPeriod'  => isset($reports['custom']),
-            'todayVsYesterday' => $todayStats
+            'allReports' => $dashboardData,
+            'totalStats' => $totalStats,
+            'reports' => $reports,
+            'hasCustomPeriod' => isset($reports['custom']),
+            'todayVsYesterday' => $todayStats,
         ]);
     }
 
@@ -101,7 +101,7 @@ class DashboardController extends Controller
 
         // Вчера до этого же времени
         $yesterdayStart = $now->copy()->subDay()->startOfDay()->format('Y-m-d');
-        $yesterdayEnd = $now->copy()->subDay()->format('Y-m-d') . ' ' . $currentTime;
+        $yesterdayEnd = $now->copy()->subDay()->format('Y-m-d').' '.$currentTime;
 
         // Статистика за сегодня до текущего времени
         $todayStats = VisitUser::query()
@@ -160,24 +160,24 @@ class DashboardController extends Controller
             ->get();
 
         return [
-            'today'       => [
-                'total'         => $todayStats->count_total,
-                'confirmed'     => $todayStats->count_confirmed,
-                'not_confirmed' => $todayStats->count_not_confirmed
+            'today' => [
+                'total' => $todayStats->count_total,
+                'confirmed' => $todayStats->count_confirmed,
+                'not_confirmed' => $todayStats->count_not_confirmed,
             ],
-            'yesterday'   => [
-                'total'         => $yesterdayStats->count_total,
-                'confirmed'     => $yesterdayStats->count_confirmed,
-                'not_confirmed' => $yesterdayStats->count_not_confirmed
+            'yesterday' => [
+                'total' => $yesterdayStats->count_total,
+                'confirmed' => $yesterdayStats->count_confirmed,
+                'not_confirmed' => $yesterdayStats->count_not_confirmed,
             ],
-            'difference'  => [
-                'total'             => $difference,
-                'percent'           => $percentChange,
-                'confirmed'         => $confirmedDifference,
-                'confirmed_percent' => $confirmedPercentChange
+            'difference' => [
+                'total' => $difference,
+                'percent' => $percentChange,
+                'confirmed' => $confirmedDifference,
+                'confirmed_percent' => $confirmedPercentChange,
             ],
             'currentTime' => $now->format('H:i'),
-            'isPositive'  => $difference >= 0,
+            'isPositive' => $difference >= 0,
             'trackersToday' => $trackerStatsToday,
             'trackersYesterday' => $trackerStatsYesterday,
         ];
@@ -186,42 +186,42 @@ class DashboardController extends Controller
     /**
      * Получить все данные за указанный период
      *
-     * @param string $startDate
-     * @param string $endDate
+     * @param  string  $startDate
+     * @param  string  $endDate
      * @return array
      */
     private function getDataForPeriod($startDate, $endDate)
     {
 
-//        [$totalStats, $dailyStats, $domainStats] = Concurrency::run([
-//            fn() => VisitUser::query()
-//                ->selectRaw('
-//                SUM(CASE WHEN confirm_click = 0 THEN 1 ELSE 0 END) as count_not_confirmed,
-//                SUM(CASE WHEN confirm_click = 1 THEN 1 ELSE 0 END) as count_confirmed,
-//                COUNT(*) as count_total')
-//                ->whereBetween('visit_date', [$startDate, $endDate])
-//                ->first(),
-//            fn() => VisitUser::query()
-//                ->selectRaw('visit_date,
-//                SUM(CASE WHEN confirm_click = 0 THEN 1 ELSE 0 END) as count_not_confirmed,
-//                SUM(CASE WHEN confirm_click = 1 THEN 1 ELSE 0 END) as count_confirmed,
-//                COUNT(*) as count_total')
-//                ->whereBetween('visit_date', [$startDate, $endDate])
-//                ->groupBy('visit_date')
-//                ->orderBy('visit_date', 'ASC')
-//                ->get(),
-//            fn() => VisitUser::query()
-//                ->selectRaw('
-//                SUBSTRING_INDEX(SUBSTRING_INDEX(referrer, "/", 1), "https://", -1) as domain,
-//                SUM(CASE WHEN confirm_click = 0 THEN 1 ELSE 0 END) as count_not_confirmed,
-//                SUM(CASE WHEN confirm_click = 1 THEN 1 ELSE 0 END) as count_confirmed,
-//                COUNT(*) as count_total')
-//                ->whereBetween('visit_date', [$startDate, $endDate])
-//                ->groupBy('domain')
-//                ->orderBy('count_total', 'DESC')
-//                ->limit(10) // Top 10 доменов
-//                ->get()
-//        ]);
+        //        [$totalStats, $dailyStats, $domainStats] = Concurrency::run([
+        //            fn() => VisitUser::query()
+        //                ->selectRaw('
+        //                SUM(CASE WHEN confirm_click = 0 THEN 1 ELSE 0 END) as count_not_confirmed,
+        //                SUM(CASE WHEN confirm_click = 1 THEN 1 ELSE 0 END) as count_confirmed,
+        //                COUNT(*) as count_total')
+        //                ->whereBetween('visit_date', [$startDate, $endDate])
+        //                ->first(),
+        //            fn() => VisitUser::query()
+        //                ->selectRaw('visit_date,
+        //                SUM(CASE WHEN confirm_click = 0 THEN 1 ELSE 0 END) as count_not_confirmed,
+        //                SUM(CASE WHEN confirm_click = 1 THEN 1 ELSE 0 END) as count_confirmed,
+        //                COUNT(*) as count_total')
+        //                ->whereBetween('visit_date', [$startDate, $endDate])
+        //                ->groupBy('visit_date')
+        //                ->orderBy('visit_date', 'ASC')
+        //                ->get(),
+        //            fn() => VisitUser::query()
+        //                ->selectRaw('
+        //                SUBSTRING_INDEX(SUBSTRING_INDEX(referrer, "/", 1), "https://", -1) as domain,
+        //                SUM(CASE WHEN confirm_click = 0 THEN 1 ELSE 0 END) as count_not_confirmed,
+        //                SUM(CASE WHEN confirm_click = 1 THEN 1 ELSE 0 END) as count_confirmed,
+        //                COUNT(*) as count_total')
+        //                ->whereBetween('visit_date', [$startDate, $endDate])
+        //                ->groupBy('domain')
+        //                ->orderBy('count_total', 'DESC')
+        //                ->limit(10) // Top 10 доменов
+        //                ->get()
+        //        ]);
         // Суммарная статистика
         $totalStats = VisitUser::query()
             ->selectRaw('
@@ -279,15 +279,15 @@ class DashboardController extends Controller
         }
 
         return [
-            'total'   => $totalStats,
-            'daily'   => $dailyStats,
+            'total' => $totalStats,
+            'daily' => $dailyStats,
             'domains' => $domainStats,
             'trackers' => $trackerStats,
             'metrics' => [
-                'conversion_rate'  => round($conversionRate, 2),
-                'days_count'       => $dailyStats->count(),
-                'avg_daily_visits' => $dailyStats->count() > 0 ? round($totalStats->count_total / $dailyStats->count(), 2) : 0
-            ]
+                'conversion_rate' => round($conversionRate, 2),
+                'days_count' => $dailyStats->count(),
+                'avg_daily_visits' => $dailyStats->count() > 0 ? round($totalStats->count_total / $dailyStats->count(), 2) : 0,
+            ],
         ];
     }
 }

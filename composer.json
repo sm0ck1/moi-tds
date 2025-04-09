@@ -13,7 +13,7 @@
         "google/apiclient": "^2.18",
         "inertiajs/inertia-laravel": "^2.0",
         "jenssegers/agent": "^2.6",
-        "laravel/framework": "^11.31",
+        "laravel/framework": "^11",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "pusher/pusher-php-server": "^7.2",

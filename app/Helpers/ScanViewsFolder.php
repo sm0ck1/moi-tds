@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Helpers;
 
 use Illuminate\Support\Facades\File;
@@ -7,8 +8,6 @@ class ScanViewsFolder
 {
     /**
      * Scan folder landings and return array with names files Blade и JPG.
-     *
-     * @return array
      */
     public static function landings(): array
     {
@@ -18,7 +17,7 @@ class ScanViewsFolder
         $items = File::allFiles($directory);
 
         foreach ($items as $file) {
-            $relativePath = str_replace($directory . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $relativePath = str_replace($directory.DIRECTORY_SEPARATOR, '', $file->getPathname());
             $parts = explode(DIRECTORY_SEPARATOR, $relativePath);
 
             if (count($parts) > 1) {
@@ -26,9 +25,9 @@ class ScanViewsFolder
                 $filename = pathinfo($file, PATHINFO_FILENAME);
                 $extension = $file->getExtension();
 
-                $viewPath = 'landings.' . str_replace(DIRECTORY_SEPARATOR, '.', str_replace('.blade.php', '', $relativePath));
+                $viewPath = 'landings.'.str_replace(DIRECTORY_SEPARATOR, '.', str_replace('.blade.php', '', $relativePath));
 
-                if (!isset($result[$folder])) {
+                if (! isset($result[$folder])) {
                     $result[$folder] = [];
                 }
 
@@ -51,17 +50,17 @@ class ScanViewsFolder
 
     public static function getLandingsInFolder($folder): array
     {
-        $directory = resource_path('views/landings/' . $folder);
+        $directory = resource_path('views/landings/'.$folder);
         $result = [];
 
         $items = File::allFiles($directory);
 
         foreach ($items as $file) {
-            $relativePath = str_replace($directory . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $relativePath = str_replace($directory.DIRECTORY_SEPARATOR, '', $file->getPathname());
             $filename = pathinfo($file, PATHINFO_FILENAME);
             $extension = $file->getExtension();
 
-            $viewPath = 'landings.' . $folder . '.' . str_replace(DIRECTORY_SEPARATOR, '.', str_replace('.blade.php', '', $relativePath));
+            $viewPath = 'landings.'.$folder.'.'.str_replace(DIRECTORY_SEPARATOR, '.', str_replace('.blade.php', '', $relativePath));
 
             if ($extension === 'php' && str_ends_with($file->getFilename(), '.blade.php')) {
                 $result[$filename] = [

@@ -11,15 +11,19 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import {ButtonGroup} from "@mui/material";
+import SearchBar, {SearchBarProps} from "@/Components/ui/SearchBar";
 
 interface HeaderProps {
     onDrawerToggle: () => void;
     title?: string;
     buttons?: { type: 'link' | 'button', href: string, label: string, current?: boolean, handleClick?: ()=>void  }[];
     filters?: { type: 'link' | 'button', href: string, label: string, current?: boolean, handleClick?: ()=>void }[];
+    search?: SearchBarProps;
 }
 
-export default function Header({onDrawerToggle, buttons, filters, title}: HeaderProps) {
+export default function Header({onDrawerToggle, buttons, filters, title, search}: HeaderProps) {
+
+
 
     return (
         <>
@@ -127,6 +131,9 @@ export default function Header({onDrawerToggle, buttons, filters, title}: Header
                                     ))}
                                 </Grid>
                             )}
+                            {search &&
+                                <SearchBar {...search} />
+                            }
                         </Grid>
                     </Toolbar>
                 </AppBar>

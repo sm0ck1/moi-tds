@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Partner;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PartnerLinkRequest;
 use App\Models\PartnerLink;
-use Illuminate\Http\Request;
 
 class PartnerLinksController extends Controller
 {

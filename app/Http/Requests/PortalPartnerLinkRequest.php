@@ -31,7 +31,7 @@ class PortalPartnerLinkRequest extends FormRequest
             'portal_partner_links.*.conditions.lendings.values' => ['nullable', 'array'],
             'portal_partner_links.*.conditions.device.value' => ['nullable', 'in:desktop,mobile'],
             'portal_partner_links.*.priority' => ['required', 'integer', 'min:0'],
-            'portal_partner_links.*.is_fallback' => ['required', 'boolean']
+            'portal_partner_links.*.is_fallback' => ['required', 'boolean'],
         ];
     }
 }

@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PartnerLink extends Model
 {
-
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
@@ -31,9 +30,11 @@ class PartnerLink extends Model
 
     public function getCountriesAttribute(): array
     {
-        $country = new Country();
+        $country = new Country;
+
         return array_map(function ($countryCode) use ($country) {
             $current = $country->getByCode($countryCode);
+
             return [
                 'code' => $countryCode,
                 'name' => $current['name'],

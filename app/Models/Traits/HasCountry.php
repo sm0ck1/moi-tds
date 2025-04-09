@@ -6,13 +6,12 @@ use App\Helpers\Country;
 
 trait HasCountry
 {
-
     public function country(): array
     {
         return [
             'name' => $this->getCountryNameAttribute(),
             'flag' => $this->getCountryFlagAttribute(),
-            'code' => $this->country_code
+            'code' => $this->country_code,
         ];
     }
 
@@ -21,6 +20,7 @@ trait HasCountry
         if (empty($this->country_code)) {
             return null;
         }
+
         return Country::getNameByCode($this->country_code);
     }
 
@@ -29,6 +29,7 @@ trait HasCountry
         if (empty($this->country_code)) {
             return null;
         }
+
         return Country::getFlagByCode($this->country_code);
     }
 }

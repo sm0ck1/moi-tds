@@ -7,13 +7,15 @@ type PortalPlacementCountersProps = {
     waitingForPing: number;
     pinged: number;
     getToPing: number;
+    totalPortalPlacements: number;
 }
 
 export default function PortalPlacementCounters({
                                                     waitingForPing,
                                                     inSearch,
                                                     pinged,
-                                                    getToPing
+                                                    getToPing,
+                                                    totalPortalPlacements
                                                 }: PortalPlacementCountersProps) {
     return (
         <Box sx={{
@@ -21,6 +23,7 @@ export default function PortalPlacementCounters({
             flexDirection: 'row',
             gap: 2
         }}>
+            <CardCounter title="Filtered" counter={totalPortalPlacements}/>
             <CardCounter title="In Search" counter={inSearch}/>
 
             <CardCounter title="Waiting for Ping" counter={waitingForPing}/>

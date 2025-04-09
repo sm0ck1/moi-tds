@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('note');
             $table->string('dns_provider');
             $table->string('dns_provider_login');
+            $table->boolean('is_active_for_ping')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });

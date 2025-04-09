@@ -10,7 +10,7 @@ return [
             'app_id' => env('VITE_PUSHER_APP_ID', ''),
             'options' => [
                 'cluster' => env('VITE_PUSHER_APP_CLUSTER', 'eu'),
-                'useTLS'  => true,
+                'useTLS' => true,
                 'timeout' => 30,
                 'persistent' => false,
                 'encrypted' => true,

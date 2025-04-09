@@ -8,7 +8,7 @@ test('login screen can be rendered', function () {
     $response->assertStatus(200);
 });
 
-test('users can authenticate using the login screen', function () {
+test('first user can authenticate using the login screen', function () {
     $user = User::factory()->create();
 
     $response = $this->post('/login', [
@@ -18,6 +18,38 @@ test('users can authenticate using the login screen', function () {
 
     $this->assertAuthenticated();
     $response->assertRedirect(route('dashboard', absolute: false));
+});
+
+test('user can authenticate using the login screen but not use dashboard without status admin', function () {
+    $first_user = User::factory()->create();
+
+    $response = $this->post('/login', [
+        'email' => $first_user->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticatedAs($first_user);
+    $response->assertRedirect(route('dashboard', absolute: false));
+    $this->get('/dashboard');
+    $this->assertGuest();
+
+});
+
+test('user can authenticate using the login screen and can see dashboard', function () {
+    $first_user = User::factory()->create([
+        'is_admin' => true,
+    ]);
+
+    $response = $this->post('/login', [
+        'email' => $first_user->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticatedAs($first_user);
+    $response->assertRedirect(route('dashboard', absolute: false));
+    $this->get('/dashboard');
+    $this->assertAuthenticatedAs($first_user);
+
 });
 
 test('users can not authenticate with invalid password', function () {

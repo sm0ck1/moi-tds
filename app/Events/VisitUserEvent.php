@@ -3,9 +3,9 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
 class VisitUserEvent implements ShouldBroadcastNow
 {
@@ -30,5 +30,4 @@ class VisitUserEvent implements ShouldBroadcastNow
     {
         return 'new-visit';
     }
-
 }

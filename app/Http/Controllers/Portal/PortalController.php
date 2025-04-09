@@ -22,8 +22,9 @@ class PortalController extends Controller
             $portals = Portal::query();
         }
         $portals = $portals->with(['topic'])->withCount(['portalPartnerLinks'])->get();
+
         return Inertia::render('Portal/PortalIndex', [
-            'portals' => $portals
+            'portals' => $portals,
         ]);
     }
 
@@ -34,7 +35,7 @@ class PortalController extends Controller
 
         return Inertia::render('Portal/PortalShow', [
             'portal' => $portal,
-            'partnerLinks' => $partnerLinks
+            'partnerLinks' => $partnerLinks,
         ]);
     }
 
@@ -42,17 +43,19 @@ class PortalController extends Controller
     {
         $topics = Topic::all();
         $landings = ScanViewsFolder::landings();
-        $countries = (new Country())->getAllCountries();
+        $countries = (new Country)->getAllCountries();
+
         return Inertia::render('Portal/PortalCreate', [
             'topics' => $topics,
             'countries' => $countries,
-            'landings' => $landings
+            'landings' => $landings,
         ]);
     }
 
     public function store(PortalRequest $request): \Illuminate\Http\RedirectResponse
     {
         Portal::create($request->all());
+
         return redirect()->route('portal.index');
     }
 
@@ -60,36 +63,39 @@ class PortalController extends Controller
     {
         $landings = ScanViewsFolder::landings();
         $topics = Topic::all();
-        $countries = (new Country())->getAllCountries();
+        $countries = (new Country)->getAllCountries();
         $portal->load(['portalPartnerLinks' => function ($query) {
             $query->orderBy('priority');
         }]);
         $partnerLinks = PartnerLink::with(['partner', 'topic'])->get();
+
         return Inertia::render('Portal/PortalEdit', [
             'portal' => $portal,
             'topics' => $topics,
             'partnerLinks' => $partnerLinks,
             'countries' => $countries,
-            'landings' => $landings
+            'landings' => $landings,
         ]);
     }
 
     public function update(PortalRequest $request, Portal $portal): \Illuminate\Http\RedirectResponse
     {
         $portal->update($request->all());
+
         return redirect()->route('portal.edit', $portal)->with('success', 'Portal updated.');
     }
 
     public function destroy(Portal $portal): \Illuminate\Http\RedirectResponse
     {
         $portal->delete();
+
         return redirect()->route('portal.index');
     }
 
     public function restore($id): \Illuminate\Http\RedirectResponse
     {
         Portal::withTrashed()->find($id)->restore();
+
         return redirect()->route('portal.index');
     }
-
 }

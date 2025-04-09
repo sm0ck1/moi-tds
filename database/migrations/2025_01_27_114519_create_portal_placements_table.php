@@ -17,6 +17,8 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
             $table->string('external_url')->comment('URL when we post our link');
+            $table->boolean('ping_counter')->default(false);
+            $table->boolean('get_to_ping')->default(false);
             $table->timestamps();
         });
     }

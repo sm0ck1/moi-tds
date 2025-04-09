@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Topic;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -27,7 +26,7 @@ class PortalRequest extends FormRequest
             'name' => ['required'],
             'topic_id' => [
                 'required',
-                Rule::exists('topics', 'id')
+                Rule::exists('topics', 'id'),
             ],
             'short_url' => ['required'],
             'default_landings' => ['required', 'array'],

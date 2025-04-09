@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PartnerRequest;
 use App\Models\Partner;
 use App\Models\Topic;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PartnerController extends Controller
@@ -23,7 +22,7 @@ class PartnerController extends Controller
         $partners = $partners->with(['partnerLinks', 'partnerLinks.topic'])->get();
 
         return Inertia::render('Partner/PartnerIndex', [
-            'partners' => $partners
+            'partners' => $partners,
         ]);
     }
 
@@ -35,30 +34,34 @@ class PartnerController extends Controller
     public function store(PartnerRequest $request)
     {
         Partner::create($request->validated());
+
         return redirect()->route('partners.index');
     }
 
     public function edit(Partner $partner)
     {
-        $countries = (new Country())->getAllCountries();
+        $countries = (new Country)->getAllCountries();
         $partner->load(['partnerLinks', 'partnerLinks.topic']);
         $topics = Topic::all();
+
         return Inertia::render('Partner/PartnerEdit', [
             'partner' => $partner,
             'topics' => $topics,
-            'countries' => $countries
+            'countries' => $countries,
         ]);
     }
 
     public function update(PartnerRequest $request, Partner $partner)
     {
         $partner->update($request->validated());
+
         return redirect()->route('partners.index');
     }
 
     public function destroy(Partner $partner)
     {
         $partner->delete();
+
         return redirect()->route('partners.index');
     }
 }

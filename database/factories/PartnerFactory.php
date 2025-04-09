@@ -15,7 +15,7 @@ class PartnerFactory extends Factory
             'name' => $this->faker->company,
             'url' => $this->faker->url,
             'login' => $this->faker->userName,
-            'password' => $this->faker->password
+            'password' => $this->faker->password,
         ];
     }
 }

@@ -14,7 +14,7 @@ class Partner extends Model
         'name',
         'url',
         'login',
-        'password'
+        'password',
     ];
 
     public $timestamps = false;
@@ -23,5 +23,4 @@ class Partner extends Model
     {
         return $this->hasMany(PartnerLink::class);
     }
-
 }

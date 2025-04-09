@@ -24,14 +24,15 @@ Route::middleware(['auth', 'admin'])->prefix('dashboard')->group(function () {
     Route::resource('domain', DomainController::class);
     Route::resource('partner-links', PartnerLinksController::class);
     Route::get('visits', [VisitUsersController::class, 'getVisits'])->name('visits.index');
-
-    Route::resource('portal-placements',PortalPlacementController::class);
+    Route::post('portal-placements-ping-again', [PortalPlacementController::class, 'pingAgainFiltered']);
+    Route::post('portal-placements-ping-is-ok', [PortalPlacementController::class, 'pingIsOkFiltered']);
+    Route::resource('portal-placements', PortalPlacementController::class);
 
     Route::post('portal-partner-links', [PortalPartnerLinksController::class, 'storePortalPartnerLinks'])->name('portal-partner-links.store');
 
-//    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    //    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    //    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    //    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';

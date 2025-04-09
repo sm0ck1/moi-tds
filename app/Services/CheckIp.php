@@ -2,60 +2,45 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class CheckIp
 {
     /**
-     * Максимальное количество запросов за указанный период.
+     * The maximum number of requests for this period.
      */
     private const MAX_REQUESTS = 30;
 
     /**
-     * Временной интервал в секундах (например, 10 секунд).
+     * The time interval in seconds (for example, 10 seconds).
      */
     private const REQUEST_INTERVAL = 10;
 
     /**
-     * Минимальное и максимальное время жизни кеша (в минутах).
+     * Minimum and maximum lifetime of the cache (in minutes).
      */
     private const CACHE_LIFETIME = [5, 10];
 
-    /**
-     * Проверяет IP-адрес и User-Agent, возвращает информацию о них.
-     *
-     * @param string $ip
-     * @param string|null $userAgent
-     * @return array|false
-     */
     public function checkIp(string $ip, ?string $userAgent = null)
     {
-        if (!$this->isIp($ip)) {
+        if (! $this->isIp($ip)) {
             return ['error' => 'I don\'t like your IP address.'];
         }
 
-        // Генерируем уникальный ключ для кеша
-        $cacheKey = 'ip_info_' . md5($ip . ($userAgent ?? ''));
+        $cacheKey = 'ip_info_'.md5($ip.($userAgent ?? ''));
 
-        // Используем Cache::flexible() для работы с кешем
         return Cache::flexible($cacheKey, self::CACHE_LIFETIME, function () use ($ip, $userAgent) {
-            // Логика получения данных
             return $this->fetchIpData($ip, $userAgent);
         });
     }
 
     /**
-     * Получает данные об IP-адресе и User-Agent.
-     *
-     * @param string $ip
-     * @param string|null $userAgent
-     * @return array|false
+     * Receives IP address and User-Agent data.
      */
     private function fetchIpData(string $ip, ?string $userAgent): array|false
     {
-        // Шаг 1: Проверка User-Agent
         $botInfoFromUserAgent = $this->detectBotByUserAgent($userAgent);
         if ($botInfoFromUserAgent) {
             return [
@@ -67,18 +52,17 @@ class CheckIp
             ];
         }
 
-        // Шаг 2: Проверка через Google's Verification Tool (если это Googlebot)
-//        if ($this->isGoogleBot($ip)) {
-//            return [
-//                'is_bot' => true,
-//                'bot_name' => 'Googlebot',
-//                'country' => null,
-//                'country_code' => null,
-//                'source' => 'google_verification_tool',
-//            ];
-//        }
+        //        Google's Verification Tool
+        //        if ($this->isGoogleBot($ip)) {
+        //            return [
+        //                'is_bot' => true,
+        //                'bot_name' => 'Googlebot',
+        //                'country' => null,
+        //                'country_code' => null,
+        //                'source' => 'google_verification_tool',
+        //            ];
+        //        }
 
-        // Шаг 3: Запрос к стороннему сервису
         $url = "http://ip-api.com/json/{$ip}?fields=country,countryCode";
         try {
             $response = Http::get($url);
@@ -94,32 +78,22 @@ class CheckIp
                     'source' => 'external_service',
                 ];
             } else {
-                Log::error("Failed to fetch IP info for {$ip}: " . $response->body());
+                Log::error("Failed to fetch IP info for {$ip}: ".$response->body());
+
                 return false;
             }
         } catch (\Exception $e) {
-            Log::error("Error occurred while fetching IP info: " . $e->getMessage());
+            Log::error('Error occurred while fetching IP info: '.$e->getMessage());
+
             return false;
         }
     }
 
-    /**
-     * Проверяет, является ли строка валидным IP-адресом.
-     *
-     * @param string $ip
-     * @return bool
-     */
     private function isIp(string $ip): bool
     {
         return filter_var($ip, FILTER_VALIDATE_IP) !== false;
     }
 
-    /**
-     * Определяет бота по User-Agent.
-     *
-     * @param string|null $userAgent
-     * @return array|null
-     */
     private function detectBotByUserAgent(?string $userAgent): ?array
     {
         if (empty($userAgent)) {
@@ -146,29 +120,23 @@ class CheckIp
         return null;
     }
 
-    /**
-     * Проверяет, является ли IP-адрес Googlebot с помощью Google's Verification Tool.
-     *
-     * @param string $ip
-     * @return bool
-     */
     private function isGoogleBot(string $ip): bool
     {
         $hostname = gethostbyaddr($ip);
 
-        // Проверяем, соответствует ли доменное имя паттерну Googlebot
-        if (!fnmatch('*.googlebot.com', $hostname)) {
+        // Domain has match with Googlebot pattern
+        if (! fnmatch('*.googlebot.com', $hostname)) {
             return false;
         }
 
-        // Выполняем прямой DNS-запрос для подтверждения
+        // Direct DNS request for confirmation
         $forwardIp = gethostbyname($hostname);
         if ($forwardIp !== $ip) {
             return false;
         }
 
-        // Дополнительно проверяем через Google's Verification Tool
-        $response = Http::get("https://dns.google/resolve", [
+        // additional check on Google's Verification Tool
+        $response = Http::get('https://dns.google/resolve', [
             'name' => $hostname,
             'type' => 'A',
         ]);
@@ -176,6 +144,7 @@ class CheckIp
         if ($response->successful()) {
             $responseData = $response->json();
             $resolvedIps = array_column($responseData['Answer'] ?? [], 'data');
+
             return in_array($ip, $resolvedIps, true);
         }
 
@@ -183,14 +152,11 @@ class CheckIp
     }
 
     /**
-     * Очищает кеш для указанного IP и User-Agent.
-     *
-     * @param string $ip
-     * @param string|null $userAgent
+     * Clear cache for target IP and User-Agent.
      */
     public function clearCache(string $ip, ?string $userAgent = null): void
     {
-        $cacheKey = 'ip_info_' . md5($ip . ($userAgent ?? ''));
+        $cacheKey = 'ip_info_'.md5($ip.($userAgent ?? ''));
         Cache::forget($cacheKey);
     }
 
@@ -200,10 +166,10 @@ class CheckIp
         $keys = [
             'HTTP_CLIENT_IP',
             'HTTP_X_FORWARDED_FOR',
-            'REMOTE_ADDR'
+            'REMOTE_ADDR',
         ];
         foreach ($keys as $key) {
-            if (!empty($_SERVER[$key])) {
+            if (! empty($_SERVER[$key])) {
                 $array = explode(',', $_SERVER[$key]);
                 $ip = trim(end($array));
                 if (filter_var($ip, FILTER_VALIDATE_IP)) {
@@ -211,6 +177,7 @@ class CheckIp
                 }
             }
         }
+
         return false;
 
     }

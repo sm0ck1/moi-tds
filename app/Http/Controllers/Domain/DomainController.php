@@ -22,7 +22,6 @@ class DomainController extends Controller
             $domains = Domain::query();
         }
 
-
         return Inertia::render('Domain/DomainIndex', [
             'domains' => $domains->get(),
         ]);
@@ -42,6 +41,7 @@ class DomainController extends Controller
     public function store(DomainCreateRequest $request)
     {
         Domain::create($request->validated());
+
         return redirect()->route('domain.index');
     }
 
@@ -65,6 +65,7 @@ class DomainController extends Controller
         }
 
         $domain->update($validation->validated());
+
         return response()->json($domain);
     }
 
@@ -84,6 +85,7 @@ class DomainController extends Controller
     public function update(DomainCreateRequest $request, Domain $domain)
     {
         $domain->update($request->validated());
+
         return redirect()->route('domain.index');
     }
 

@@ -15,12 +15,12 @@ class PortalPartnerLink extends Model
         'partner_link_id',
         'conditions',
         'priority',
-        'is_fallback'
+        'is_fallback',
     ];
 
     protected $casts = [
         'conditions' => 'array',
-        'is_fallback' => 'boolean'
+        'is_fallback' => 'boolean',
     ];
 
     public function portal(): \Illuminate\Database\Eloquent\Relations\BelongsTo

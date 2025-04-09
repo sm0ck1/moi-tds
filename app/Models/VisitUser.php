@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class VisitUser extends Model
 {
-    use HasFactory, HasCountry;
+    use HasCountry, HasFactory;
 
     protected $fillable = [
         'ip_address',
@@ -26,7 +26,7 @@ class VisitUser extends Model
 
         'portal_partner_link_id',
         'portal_id',
-        'uniq_user_hash'
+        'uniq_user_hash',
     ];
 
     protected $casts = [
@@ -37,7 +37,7 @@ class VisitUser extends Model
     ];
 
     protected $appends = [
-        'country_name', 'country_flag'
+        'country_name', 'country_flag',
     ];
 
     public function portalPartnerLink(): \Illuminate\Database\Eloquent\Relations\BelongsTo

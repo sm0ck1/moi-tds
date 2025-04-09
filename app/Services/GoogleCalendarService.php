@@ -2,19 +2,20 @@
 
 namespace App\Services;
 
+use Exception;
 use Google_Client;
 use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use Exception;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class GoogleCalendarService
 {
     private const MOBILE_USER_AGENT = 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1';
 
     private $service;
+
     private $calendarId;
 
     public function __construct()
@@ -22,7 +23,7 @@ class GoogleCalendarService
         try {
             $this->calendarId = env('GOOGLE_CALENDAR_ID', '');
 
-            $client = new Google_Client();
+            $client = new Google_Client;
             $client->setApplicationName('My calendar');
             $client->setScopes(Google_Service_Calendar::CALENDAR);
             $client->setAuthConfig(Storage::path(env('GOOGLE_CREDENTIALS_FILE', '')));
@@ -33,13 +34,13 @@ class GoogleCalendarService
         } catch (Exception $e) {
             Log::error('Ошибка инициализации календаря', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
             throw $e;
         }
     }
 
-    public function createEventAndExtractLinks(array$links = []): array
+    public function createEventAndExtractLinks(array $links = []): array
     {
         try {
             // Создаём событие
@@ -47,9 +48,9 @@ class GoogleCalendarService
             $eventId = $event->getId();
             $publicUrl = $event->getHtmlLink();
 
-            Log::info("Создано событие", [
+            Log::info('Создано событие', [
                 'event_id' => $eventId,
-                'public_url' => $publicUrl
+                'public_url' => $publicUrl,
             ]);
 
             // Получаем ссылки из события
@@ -62,9 +63,9 @@ class GoogleCalendarService
             return $links;
 
         } catch (Exception $e) {
-            Log::error("Ошибка при работе с календарем", [
+            Log::error('Ошибка при работе с календарем', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
             throw $e;
         }
@@ -89,14 +90,14 @@ class GoogleCalendarService
                     htmlspecialchars($url)
                 );
             });
-            Log::info("Ссылки для события", [
-                'links' => $htmlLinks->toArray()
+            Log::info('Ссылки для события', [
+                'links' => $htmlLinks->toArray(),
             ]);
 
-            $description = "Event Description:<br><br>" . $htmlLinks->join("<br>");
+            $description = 'Event Description:<br><br>'.$htmlLinks->join('<br>');
 
             $event = new Google_Service_Calendar_Event([
-                'summary' => 'Event ' . date('Y-m-d H:i'),
+                'summary' => 'Event '.date('Y-m-d H:i'),
                 'description' => $description,
                 'start' => [
                     'dateTime' => date('c', $startTime),
@@ -107,15 +108,16 @@ class GoogleCalendarService
                     'timeZone' => 'UTC',
                 ],
             ]);
-            Log::info("Создание события", [
+            Log::info('Создание события', [
                 'calendar_id' => $this->calendarId,
-                'event' => $event->toSimpleObject()
+                'event' => $event->toSimpleObject(),
             ]);
+
             return $this->service->events->insert($this->calendarId, $event);
 
         } catch (Exception $e) {
-            Log::error("Ошибка при создании события", [
-                'error' => $e->getMessage()
+            Log::error('Ошибка при создании события', [
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -135,30 +137,32 @@ class GoogleCalendarService
                 'Sec-Fetch-Dest' => 'document',
                 'Sec-Fetch-Mode' => 'navigate',
                 'Sec-Fetch-Site' => 'none',
-                'Sec-Fetch-User' => '?1'
+                'Sec-Fetch-User' => '?1',
             ])
                 ->withOptions([
                     'verify' => false,
                     'timeout' => 30,
-                    'allow_redirects' => true
+                    'allow_redirects' => true,
                 ])
                 ->get($publicUrl);
 
-            if (!$response->successful()) {
-                Log::error("Ошибка при получении HTML", [
+            if (! $response->successful()) {
+                Log::error('Ошибка при получении HTML', [
                     'status' => $response->status(),
-                    'url' => $publicUrl
+                    'url' => $publicUrl,
                 ]);
+
                 return [];
             }
 
             return $this->extractGoogleLinks($response->body());
 
         } catch (Exception $e) {
-            Log::error("Ошибка при загрузке страницы события", [
+            Log::error('Ошибка при загрузке страницы события', [
                 'url' => $publicUrl,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -178,9 +182,10 @@ class GoogleCalendarService
             }, array_unique($matches[0]));
 
         } catch (Exception $e) {
-            Log::error("Ошибка при извлечении ссылок", [
-                'error' => $e->getMessage()
+            Log::error('Ошибка при извлечении ссылок', [
+                'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -189,19 +194,21 @@ class GoogleCalendarService
     {
         try {
             $this->service->events->delete($this->calendarId, $eventId);
-            Log::info("Событие удалено", ['event_id' => $eventId]);
+            Log::info('Событие удалено', ['event_id' => $eventId]);
+
             return true;
         } catch (Exception $e) {
-            Log::error("Ошибка при удалении события", [
+            Log::error('Ошибка при удалении события', [
                 'event_id' => $eventId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
 
     public function getCalendarViewUrl(): string
     {
-        return "https://calendar.google.com/calendar/embed?src=" . urlencode($this->calendarId);
+        return 'https://calendar.google.com/calendar/embed?src='.urlencode($this->calendarId);
     }
 }

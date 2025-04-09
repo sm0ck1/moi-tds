@@ -42,7 +42,7 @@ class VisitUserSeeder extends Seeder
                 ];
 
                 // Экранируем специальные символы
-                $record = array_map(function($field) {
+                $record = array_map(function ($field) {
                     return str_replace(["\n", "\r", "\t", ','], ' ', $field);
                 }, $record);
 
@@ -61,7 +61,7 @@ class VisitUserSeeder extends Seeder
         VisitUser::unsetEventDispatcher();
 
         // Загружаем данные через LOAD DATA INFILE
-        $query = "LOAD DATA LOCAL INFILE '" . str_replace('\\', '/', $tempFile) . "'
+        $query = "LOAD DATA LOCAL INFILE '".str_replace('\\', '/', $tempFile)."'
             INTO TABLE visit_users
             FIELDS TERMINATED BY ','
             OPTIONALLY ENCLOSED BY '\"'
@@ -72,15 +72,15 @@ class VisitUserSeeder extends Seeder
             DB::statement($query);
             $this->command->info('Data loaded successfully!');
         } catch (\Exception $e) {
-            $this->command->error('Error loading data: ' . $e->getMessage());
+            $this->command->error('Error loading data: '.$e->getMessage());
 
             // Альтернативный вариант через INSERT если LOAD DATA INFILE недоступен
             $this->command->info('Falling back to INSERT...');
 
             $handle = fopen($tempFile, 'r');
-            while (!feof($handle)) {
+            while (! feof($handle)) {
                 $records = [];
-                for ($i = 0; $i < 1000 && !feof($handle); $i++) {
+                for ($i = 0; $i < 1000 && ! feof($handle); $i++) {
                     $record = fgetcsv($handle);
                     if ($record) {
                         $records[] = [
@@ -94,7 +94,7 @@ class VisitUserSeeder extends Seeder
                         ];
                     }
                 }
-                if (!empty($records)) {
+                if (! empty($records)) {
                     VisitUser::insert($records);
                 }
             }

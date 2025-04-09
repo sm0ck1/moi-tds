@@ -3,22 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 class HelperController extends Controller
 {
     public function getShortUrl($length = 6): \Illuminate\Http\JsonResponse
     {
 
-        $shortUrl = new \App\Helpers\MakeShortCode();
+        $shortUrl = new \App\Helpers\MakeShortCode;
 
         return response()->json([
-            'short_url' => $shortUrl->make($length)
+            'short_url' => $shortUrl->make($length),
         ]);
     }
 
-    public function previewLanding($lending)
-    {
-
-    }
+    public function previewLanding($lending) {}
 }

@@ -17,13 +17,14 @@ class CheckVisitJob implements ShouldQueue
     {
         $this->data = $data;
     }
+
     /**
      * Execute the job.
      */
     public function handle(): void
     {
         $visitUser = VisitUser::where('uniq_user_hash', $this->data['uniq_user_hash'])->first();
-        if (!$visitUser) {
+        if (! $visitUser) {
             return;
         }
 

@@ -4,13 +4,12 @@ namespace App\Http\Controllers\VisitUsers;
 
 use App\Http\Controllers\Controller;
 use App\Models\VisitUser;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class VisitUsersController extends Controller
 {
-    function getVisits()
+    public function getVisits()
     {
         $visits = QueryBuilder::for(VisitUser::class)
             ->with(['portal', 'portalPartnerLink', 'portalPartnerLink.partner'])
@@ -19,7 +18,7 @@ class VisitUsersController extends Controller
             ->paginate(10);
 
         return Inertia::render('VisitUsers/VisitUsersIndex', [
-            'visitUsers' => $visits
+            'visitUsers' => $visits,
         ]);
 
     }

@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-
     private $topics = [
         'Dating',
         'Download',
@@ -28,36 +27,34 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         User::factory()->create([
-            'name'     => 'Admin',
-            'email'    => env('ADMIN_LOGIN') ?? 'admin@admin.com',
+            'name' => 'Admin',
+            'email' => env('ADMIN_LOGIN') ?? 'admin@admin.com',
             'password' => Hash::make(env('ADMIN_PASSWORD') ?? 'password'),
         ]);
 
-
         foreach ($this->topics as $name) {
             Topic::factory()->create([
-                'name' => $name
+                'name' => $name,
             ]);
         }
-//        Domain::factory()->create([
-//            'name' => 'lookonlooks.com',
-//            'date_registration' => '2021-01-01',
-//            'dns_provider_login' => 'admin',
-//            'dns_provider' => 'GoDaddy',
-//        ]);
-//
-//        Partner::factory()->count(rand(5, 15))->create();
-//        PartnerLink::factory()->count(rand(5, 15))->create();
-//        Portal::factory()->count(rand(5, 15))->create();
-//        Portal::all()->each(function ($portal) {
-//            PortalPartnerLink::factory()
-//                ->forPortal($portal->id, fake()->numberBetween(2, 5))
-//                ->create();
-//        });
-//
-//        VisitUser::factory()->count(rand(120, 265))->create();
-        //$this->call(VisitUserSeeder::class);
-
+        //        Domain::factory()->create([
+        //            'name' => 'lookonlooks.com',
+        //            'date_registration' => '2021-01-01',
+        //            'dns_provider_login' => 'admin',
+        //            'dns_provider' => 'GoDaddy',
+        //        ]);
+        //
+        //        Partner::factory()->count(rand(5, 15))->create();
+        //        PartnerLink::factory()->count(rand(5, 15))->create();
+        //        Portal::factory()->count(rand(5, 15))->create();
+        //        Portal::all()->each(function ($portal) {
+        //            PortalPartnerLink::factory()
+        //                ->forPortal($portal->id, fake()->numberBetween(2, 5))
+        //                ->create();
+        //        });
+        //
+        //        VisitUser::factory()->count(rand(120, 265))->create();
+        // $this->call(VisitUserSeeder::class);
 
     }
 }

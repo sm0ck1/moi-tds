@@ -2,8 +2,10 @@
 
 namespace App\Helpers;
 
-class Encryptor {
+class Encryptor
+{
     private string $key;
+
     private string $cipher = 'AES-256-CBC';
 
     public function __construct(string $secretKey)
@@ -27,7 +29,7 @@ class Encryptor {
             $iv
         );
 
-        $combined = $iv . $salt . $encrypted;
+        $combined = $iv.$salt.$encrypted;
 
         return base64_encode($combined);
     }

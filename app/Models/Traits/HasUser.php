@@ -6,7 +6,6 @@ use MoonShine\Laravel\Models\MoonshineUser;
 
 trait HasUser
 {
-
     protected static function bootHasUser()
     {
         static::creating(function ($model) {
@@ -18,7 +17,4 @@ trait HasUser
     {
         return $this->belongsTo(MoonshineUser::class);
     }
-
-
-
 }

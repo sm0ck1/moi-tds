@@ -22,11 +22,11 @@ class PortalPartnerLinkFactory extends Factory
             'conditions' => [
                 'country' => [
                     'operator' => fake()->randomElement(['in', 'not']),
-                    'values' => fake()->randomElements(['US', 'UK', 'CA', 'AU', 'DE'], random_int(1, 3))
+                    'values' => fake()->randomElements(['US', 'UK', 'CA', 'AU', 'DE'], random_int(1, 3)),
                 ],
                 'device' => [
-                    'value' => fake()->randomElement(['desktop', 'mobile'])
-                ]
+                    'value' => fake()->randomElement(['desktop', 'mobile']),
+                ],
             ],
             'priority' => 0, // будет установлено позже
             'is_fallback' => false, // будет установлено позже
@@ -36,31 +36,30 @@ class PortalPartnerLinkFactory extends Factory
     /**
      * Configure the factory to create portal partner links with proper order and fallback.
      *
-     * @param int $portalId
-     * @param int $count Number of links to create (including fallback)
+     * @param  int  $count  Number of links to create (including fallback)
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
     public function forPortal(int $portalId, int $count = 3)
     {
         return $this->sequence(
             ...collect(range(0, $count - 1))->map(function ($index) use ($portalId, $count) {
-            $isFallback = $index === $count - 1;
+                $isFallback = $index === $count - 1;
 
-            return [
-                'portal_id' => $portalId,
-                'priority' => $index,
-                'is_fallback' => $isFallback,
-                'conditions' => $isFallback ? [] : [
-                    'country' => [
-                        'operator' => fake()->randomElement(['in', 'not']),
-                        'values' => fake()->randomElements(['US', 'UK', 'CA', 'AU', 'DE'], random_int(1, 3))
+                return [
+                    'portal_id' => $portalId,
+                    'priority' => $index,
+                    'is_fallback' => $isFallback,
+                    'conditions' => $isFallback ? [] : [
+                        'country' => [
+                            'operator' => fake()->randomElement(['in', 'not']),
+                            'values' => fake()->randomElements(['US', 'UK', 'CA', 'AU', 'DE'], random_int(1, 3)),
+                        ],
+                        'device' => [
+                            'value' => fake()->randomElement(['desktop', 'mobile']),
+                        ],
                     ],
-                    'device' => [
-                        'value' => fake()->randomElement(['desktop', 'mobile'])
-                    ]
-                ],
-            ];
-        })->toArray()
+                ];
+            })->toArray()
         );
     }
 }

@@ -17,13 +17,13 @@ class Portal extends Model
         'default_landings',
         'note',
         'topic_id',
-        'default_landings'
+        'default_landings',
     ];
 
     protected $casts = [
         'created_at' => 'datetime:d.m.Y',
         'updated_at' => 'datetime:d.m.Y',
-        'default_landings' => 'array'
+        'default_landings' => 'array',
     ];
 
     public function topic()
@@ -35,7 +35,4 @@ class Portal extends Model
     {
         return $this->hasMany(PortalPartnerLink::class);
     }
-
-
-
 }

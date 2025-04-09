@@ -8,13 +8,14 @@ import Link from '@mui/material/Link';
 import Navigator from './Navigator';
 import Header from './Header';
 import {PropsWithChildren} from "react";
+import {SearchBarProps} from "@/Components/ui/SearchBar";
 
 function Copyright() {
     return (
         <Typography variant="body2" align="center" sx={{color: 'text.secondary'}}>
             {'Copyright © '}
             <Link color="inherit" href="https://mui.com/">
-                Moi TDS 
+                Moi TDS
             </Link>{' '}
             {new Date().getFullYear()}.
         </Typography>
@@ -170,6 +171,7 @@ type HeaderProps = {
     title: string;
     buttons?: { type: 'link' | 'button', href: string, label: string, current?: boolean, handleClick?: ()=>void  }[];
     filters?: { type: 'link' | 'button', href: string, label: string, current?: boolean, handleClick?: ()=>void }[];
+    search?: SearchBarProps;
 };
 
 export default function DashboardLayout({header, children}: PropsWithChildren<{ header?: HeaderProps }>) {
@@ -206,6 +208,7 @@ export default function DashboardLayout({header, children}: PropsWithChildren<{ 
                         title={header?.title}
                         buttons={header?.buttons}
                         filters={header?.filters}
+                        search={header?.search}
                         onDrawerToggle={handleDrawerToggle}
                     />
                     <Box component="main" sx={{flex: 1, py: 6, px: 3, bgcolor: '#eaeff1'}}>

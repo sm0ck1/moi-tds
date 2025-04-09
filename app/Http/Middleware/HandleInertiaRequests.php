@@ -32,7 +32,7 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            'vite_asset_url' => env('APP_URL') . ':5174',
+            'vite_asset_url' => env('APP_URL').':5174',
             'auth' => [
                 'user' => $request->user(),
             ],
@@ -40,7 +40,7 @@ class HandleInertiaRequests extends Middleware
             'pusher' => [
                 'key' => config('broadcasting.connections.pusher.key'),
             ],
-            'current_time' => $now = Carbon::now()->format('H:i')
+            'current_time' => $now = Carbon::now()->format('H:i'),
         ];
     }
 }

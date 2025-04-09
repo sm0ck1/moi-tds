@@ -17,7 +17,6 @@ use Jenssegers\Agent\Agent;
 
 class RedirectController extends Controller
 {
-
     public function redirect(Request $request, $short_url)
     {
 
@@ -35,20 +34,20 @@ class RedirectController extends Controller
         }
 
         $portal = Portal::select(['id', 'default_landings'])->with([
-            'portalPartnerLinks'
+            'portalPartnerLinks',
         ])->where('short_url', $short_url)->firstOrFail();
 
-        if (!$portal) {
+        if (! $portal) {
             return response()->json(['error' => 'Not found'], 404);
         }
 
-        $ipCheck = new CheckIp();
+        $ipCheck = new CheckIp;
         $checkIp = $ipCheck->checkIp($ip, $userAgent);
         if (isset($checkIp['error'])) {
             return response()->json(['error' => $checkIp['error']], 429);
         }
 
-        $agent = new Agent();
+        $agent = new Agent;
         $agent->setUserAgent($userAgent);
         $deviceType = $agent->isMobile() || $agent->isTablet() ? 'mobile' : 'desktop';
         $visitDate = Carbon::now()->format('Y-m-d');
@@ -61,7 +60,7 @@ class RedirectController extends Controller
 
             if (isset($conditions['country'])) {
                 $inList = in_array($checkIp['country_code'], $conditions['country']['values']);
-                if (($conditions['country']['operator'] === 'in' && !$inList) ||
+                if (($conditions['country']['operator'] === 'in' && ! $inList) ||
                     ($conditions['country']['operator'] === 'not' && $inList)) {
                     continue;
                 }
@@ -79,7 +78,7 @@ class RedirectController extends Controller
             $portal_partner_link_id = $link->id;
             break;
         }
-        if (!$landings) {
+        if (! $landings) {
             return response()->json(['error' => 'Not found'], 404);
         }
 
@@ -91,14 +90,14 @@ class RedirectController extends Controller
         }
 
         $uniqUserHash = (new UniqUserHash(
-                [
-                    $portal->id,
-                    $portal_partner_link_id,
-                    $ip,
-                    $userAgent,
-                    $visitDate
-                ]
-            ))->generate() . Str::replace('-', '', $visitDate);
+            [
+                $portal->id,
+                $portal_partner_link_id,
+                $ip,
+                $userAgent,
+                $visitDate,
+            ]
+        ))->generate().Str::replace('-', '', $visitDate);
 
         if ($tracker) {
             $external_url = str_replace('{short_link}', $tracker, $external_url);
@@ -108,33 +107,34 @@ class RedirectController extends Controller
         $external_url = str_replace('{uniq_user_hash}', $uniqUserHash, $external_url);
 
         $data = [
-            'uniq_user_hash'      => $uniqUserHash,
-            'deviceType'          => $deviceType,
-            'ip'                  => $ip,
-            'userAgent'           => $userAgent,
-            'referrer'            => $referrer,
-            'visitDate'           => $visitDate,
-            'landing'             => $landings,
-            'country_code'        => $checkIp['country_code'],
-            'portalId'            => $portal->id,
+            'uniq_user_hash' => $uniqUserHash,
+            'deviceType' => $deviceType,
+            'ip' => $ip,
+            'userAgent' => $userAgent,
+            'referrer' => $referrer,
+            'visitDate' => $visitDate,
+            'landing' => $landings,
+            'country_code' => $checkIp['country_code'],
+            'portalId' => $portal->id,
             'portalPartnerLinkId' => $portal_partner_link_id,
-            'tracker'             => $tracker ?? '',
+            'tracker' => $tracker ?? '',
         ];
 
         $encryptor = new Encryptor(env('ENCRYPT_KEY', 'abracadabra'));
+
         return response()
 //            ->view('landings.other.security_page', [
             ->view($landings, [
-                'url'              => base64_encode($external_url),
+                'url' => base64_encode($external_url),
                 'user_unique_hash' => $uniqUserHash,
-                'first_data'       => base64_encode($encryptor->encrypt($data)),
+                'first_data' => base64_encode($encryptor->encrypt($data)),
             ])
             ->cookie('cat', $uniqUserHash, 60, null, null, false, false);
 
-//        if (config('app.debug')) {
-//            return response()->json($data);
-//        }
-//        return redirect()->away($external_url);
+        //        if (config('app.debug')) {
+        //            return response()->json($data);
+        //        }
+        //        return redirect()->away($external_url);
 
     }
 
@@ -142,8 +142,8 @@ class RedirectController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'metrics' => 'string',
-            'url'     => 'string',
-            'uh'      => 'string',
+            'url' => 'string',
+            'uh' => 'string',
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => 'Bad request'], 403);
@@ -154,16 +154,15 @@ class RedirectController extends Controller
             $metrics = json_decode(base64_decode($data['metrics']), true);
             $external_url = base64_decode($data['url']);
             $user_unique_hash = $data['uh'];
-            if (!$user_unique_hash || !$external_url || !$metrics) {
+            if (! $user_unique_hash || ! $external_url || ! $metrics) {
                 return response()->json(['error' => 'Bad request'], 403);
             }
 
             UpdateVisitJob::dispatch([
                 'uniq_user_hash' => $user_unique_hash,
-                'metrics'        => $metrics,
-                'external_url'   => $external_url,
+                'metrics' => $metrics,
+                'external_url' => $external_url,
             ]);
-
 
         } catch (\Exception $e) {
             return false;
@@ -180,8 +179,8 @@ class RedirectController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'metrics' => 'string',
-            'uh'      => 'string',
-            'fd'      => 'string',
+            'uh' => 'string',
+            'fd' => 'string',
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => 'Bad request'], 403);
@@ -193,16 +192,16 @@ class RedirectController extends Controller
             $metrics = json_decode(base64_decode($data['metrics']), true);
             $first_data = $data['fd'];
 
-            if (!$user_unique_hash || !$metrics || !$first_data) {
+            if (! $user_unique_hash || ! $metrics || ! $first_data) {
                 return response()->json(['error' => 'Bad request'], 403);
             }
 
             $encryptor = new Encryptor(env('ENCRYPT_KEY', 'abracadabra'));
             $decrypt = $encryptor->decrypt(base64_decode($first_data));
-            if (!$decrypt) {
+            if (! $decrypt) {
                 return response()->json(['error' => 'Bad request'], 403);
             }
-            //dd([...$decrypt, 'metrics' => $metrics]);
+            // dd([...$decrypt, 'metrics' => $metrics]);
             StoreVisitJob::dispatch([...$decrypt, 'metrics' => $metrics]);
 
         } catch (\Exception $e) {

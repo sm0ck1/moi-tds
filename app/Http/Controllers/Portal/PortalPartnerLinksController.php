@@ -26,7 +26,7 @@ class PortalPartnerLinksController extends Controller
                     'partner_link_id' => $link['partner_link_id'],
                     'conditions' => json_encode($link['conditions']),
                     'priority' => $link['priority'],
-                    'is_fallback' => $link['is_fallback']
+                    'is_fallback' => $link['is_fallback'],
                 ])->all(),
                 ['id'],
                 ['partner_link_id', 'conditions', 'priority', 'is_fallback']
